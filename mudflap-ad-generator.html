@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mudflap Ad Visual Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --mf-navy: #0432BA;
+    --mf-deep-navy: #021E70;
+    --mf-darkest: #000854;
+    --mf-green: #00BA7F;
+    --mf-green-dark: #00885D;
+    --mf-green-darkest: #002218;
+    --mf-orange: #FE9738;
+    --mf-blue-mid: #4878FF;
+    --mf-night: #02152A;
+    --mf-light-blue: #EAF4FF;
+    --mf-border: rgba(0,0,0,0.1);
+    --mf-border-hover: rgba(0,0,0,0.2);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+  }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: #F5F8FC;
+    color: #02152A;
+    min-height: 100vh;
+  }
+
+  /* API KEY SCREEN */
+  #apiScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--mf-deep-navy);
+    padding: 2rem;
+  }
+  .api-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    max-width: 440px;
+    width: 100%;
+  }
+  .api-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 1.75rem; }
+  .api-logo svg { width: 36px; height: 36px; }
+  .api-logo span { font-size: 22px; font-weight: 800; color: var(--mf-deep-navy); letter-spacing: -0.02em; }
+  .api-card h2 { font-size: 18px; font-weight: 700; color: var(--mf-deep-navy); margin-bottom: 8px; }
+  .api-card p { font-size: 13px; color: #546E7A; line-height: 1.6; margin-bottom: 1.5rem; }
+  .api-card a { color: var(--mf-navy); }
+  .api-input-wrap { display: flex; gap: 8px; }
+  .api-input-wrap input {
+    flex: 1; padding: 10px 12px; border: 1px solid var(--mf-border-hover);
+    border-radius: var(--radius-sm); font-family: 'Open Sans', sans-serif;
+    font-size: 13px; color: var(--mf-night); outline: none;
+  }
+  .api-input-wrap input:focus { border-color: var(--mf-navy); }
+  .api-submit {
+    padding: 10px 18px; background: var(--mf-navy); color: #fff;
+    border: none; border-radius: var(--radius-sm); font-family: 'Open Sans', sans-serif;
+    font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap;
+  }
+  .api-submit:hover { background: var(--mf-deep-navy); }
+  .api-note { font-size: 11px; color: #78909C; margin-top: 10px; }
+
+  /* MAIN APP */
+  #appScreen { display: none; min-height: 100vh; }
+
+  header {
+    background: var(--mf-deep-navy);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-logo { display: flex; align-items: center; gap: 9px; }
+  .header-logo svg { width: 28px; height: 28px; }
+  .header-logo span { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: 0.02em; }
+  .header-tag { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 400; margin-left: 4px; }
+  .change-key { font-size: 12px; color: rgba(255,255,255,0.45); background: none; border: none; cursor: pointer; font-family: 'Open Sans', sans-serif; }
+  .change-key:hover { color: rgba(255,255,255,0.75); }
+
+  .main { display: flex; gap: 0; max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; align-items: flex-start; }
+
+  /* LEFT — controls */
+  .controls { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; }
+
+  .card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--mf-border);
+    padding: 18px;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 700; color: #78909C;
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
+  }
+
+  textarea#prompt {
+    width: 100%; min-height: 80px; resize: vertical;
+    font-family: 'Open Sans', sans-serif; font-size: 13px;
+    line-height: 1.6; padding: 10px 12px;
+    border: 1px solid var(--mf-border-hover); border-radius: var(--radius-sm);
+    color: var(--mf-night); background: #F5F8FC; outline: none;
+  }
+  textarea#prompt:focus { border-color: var(--mf-navy); background: #fff; }
+  textarea#prompt::placeholder { color: #B0BEC5; }
+
+  .chip-group { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip {
+    padding: 5px 11px; font-size: 12px; font-weight: 600;
+    border-radius: 20px; border: 1px solid var(--mf-border-hover);
+    background: transparent; color: #546E7A;
+    cursor: pointer; font-family: 'Open Sans', sans-serif;
+    transition: all 0.12s;
+  }
+  .chip:hover { border-color: var(--mf-navy); color: var(--mf-navy); }
+  .chip.active { background: var(--mf-light-blue); color: var(--mf-navy); border-color: var(--mf-blue-mid); }
+
+  .pal-row { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; }
+  .pal-swatch {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid transparent; cursor: pointer;
+    transition: transform 0.12s;
+    position: relative;
+  }
+  .pal-swatch.active { border-color: var(--mf-night); transform: scale(1.18); }
+  .pal-swatch title { display: none; }
+
+  .gen-btn {
+    width: 100%; padding: 11px;
+    background: var(--mf-navy); color: #fff;
+    border: none; border-radius: var(--radius-md);
+    font-family: 'Open Sans', sans-serif; font-weight: 700;
+    font-size: 14px; cursor: pointer; letter-spacing: 0.01em;
+    transition: background 0.15s;
+  }
+  .gen-btn:hover { background: var(--mf-deep-navy); }
+  .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* RIGHT — canvas area */
+  .canvas-area { flex: 1; margin-left: 24px; }
+
+  .size-bar {
+    display: flex; gap: 8px; margin-bottom: 16px; align-items: center;
+  }
+  .size-btn {
+    padding: 6px 14px; font-size: 12px; font-weight: 600;
+    border-radius: var(--radius-sm); border: 1px solid var(--mf-border-hover);
+    background: #fff; color: #546E7A; cursor: pointer;
+    font-family: 'Open Sans', sans-serif; transition: all 0.12s;
+  }
+  .size-btn.active { background: var(--mf-deep-navy); color: #fff; border-color: var(--mf-deep-navy); }
+  .size-label { font-size: 11px; color: #B0BEC5; margin-left: 6px; }
+
+  .canvas-wrap {
+    background: #fff; border-radius: var(--radius-lg);
+    border: 1px solid var(--mf-border);
+    padding: 24px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    min-height: 400px; justify-content: center;
+  }
+
+  canvas#adCanvas {
+    border-radius: 10px;
+    display: block;
+    max-width: 100%;
+    max-height: 420px;
+    box-shadow: 0 4px 24px rgba(4,50,186,0.12);
+  }
+
+  .canvas-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding-top: 4px;
+  }
+  .status-msg { font-size: 12px; color: #78909C; }
+  .dl-btn {
+    padding: 8px 18px; font-size: 12px; font-weight: 700;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--mf-border-hover);
+    background: #fff; color: var(--mf-night);
+    cursor: pointer; font-family: 'Open Sans', sans-serif;
+    transition: all 0.12s;
+  }
+  .dl-btn:hover { background: var(--mf-deep-navy); color: #fff; border-color: var(--mf-deep-navy); }
+
+  @media (max-width: 780px) {
+    .main { flex-direction: column; }
+    .controls { width: 100%; }
+    .canvas-area { margin-left: 0; margin-top: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- API KEY SCREEN -->
+<div id="apiScreen">
+  <div class="api-card">
+    <div class="api-logo">
+      <svg viewBox="0 0 36 36" fill="none">
+        <polygon points="18,2 34,18 18,34 2,18" fill="#00BA7F" stroke="#fff" stroke-width="2"/>
+        <text x="18" y="24" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="sans-serif">⚡</text>
+      </svg>
+      <span>MUDFLAP</span>
+    </div>
+    <h2>Ad Visual Generator</h2>
+    <p>Enter your Anthropic API key to get started. Your key is stored only in your browser session — it's never sent anywhere except directly to Anthropic's API.<br><br>
+    Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+    <div class="api-input-wrap">
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." />
+      <button class="api-submit" onclick="saveKey()">Start</button>
+    </div>
+    <p class="api-note" id="apiError"></p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appScreen">
+  <header>
+    <div class="header-logo">
+      <svg viewBox="0 0 28 28" fill="none">
+        <polygon points="14,1 27,14 14,27 1,14" fill="#00BA7F" stroke="#fff" stroke-width="1.5"/>
+        <text x="14" y="19" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff" font-family="sans-serif">⚡</text>
+      </svg>
+      <span>MUDFLAP <span class="header-tag">Ad Generator</span></span>
+    </div>
+    <button class="change-key" onclick="changeKey()">Change API key</button>
+  </header>
+
+  <div class="main">
+    <!-- CONTROLS -->
+    <div class="controls">
+
+      <div class="card">
+        <div class="card-title">Describe your ad</div>
+        <textarea id="prompt" placeholder="e.g. Diesel savings promo — 15 ¢/gal off at 3,600+ stops, targeting fleet managers with 5+ trucks"></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Funnel stage</div>
+        <div class="chip-group" id="stageChips">
+          <button class="chip active" data-v="Awareness">Awareness</button>
+          <button class="chip" data-v="Consideration">Consideration</button>
+          <button class="chip" data-v="Conversion">Conversion</button>
+          <button class="chip" data-v="Retargeting">Retargeting</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Layout style</div>
+        <div class="chip-group" id="layoutChips">
+          <button class="chip active" data-v="bold">Bold</button>
+          <button class="chip" data-v="clean">Clean</button>
+          <button class="chip" data-v="stat-forward">Stat-forward</button>
+          <button class="chip" data-v="minimal">Minimal</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Color palette</div>
+        <div class="pal-row" id="palRow">
+          <div class="pal-swatch active" data-p="navy" style="background:#0432BA" title="Mudflap Navy"></div>
+          <div class="pal-swatch" data-p="deep-navy" style="background:#021E70" title="Deep Navy"></div>
+          <div class="pal-swatch" data-p="night" style="background:#02152A" title="Night Dark"></div>
+          <div class="pal-swatch" data-p="green" style="background:#00885D" title="Mudflap Green"></div>
+          <div class="pal-swatch" data-p="orange" style="background:#FE9738" title="Orange"></div>
+        </div>
+      </div>
+
+      <button class="gen-btn" id="genBtn" onclick="generate()">Generate visual →</button>
+
+    </div>
+
+    <!-- CANVAS -->
+    <div class="canvas-area">
+      <div class="size-bar">
+        <button class="size-btn active" onclick="setSize('square',this)">Square 1:1</button>
+        <button class="size-btn" onclick="setSize('story',this)">Story 9:16</button>
+        <button class="size-btn" onclick="setSize('landscape',this)">Landscape 1.91:1</button>
+        <span class="size-label" id="sizeLabel">1080 × 1080</span>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="adCanvas"></canvas>
+        <div class="canvas-footer">
+          <span class="status-msg" id="statusMsg">Choose your settings and generate</span>
+          <button class="dl-btn" onclick="download()">Download PNG</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────
+let apiKey = sessionStorage.getItem('mf_api_key') || '';
+let curSize = 'square', curPal = 'navy', curStage = 'Awareness', curLayout = 'bold', lastSpec = null;
+
+const SIZES = {
+  square:    { w: 1080, h: 1080, display: { w: 400, h: 400 }, label: '1080 × 1080' },
+  story:     { w: 1080, h: 1920, display: { w: 225, h: 400 }, label: '1080 × 1920' },
+  landscape: { w: 1200, h: 628, display: { w: 400, h: 209 }, label: '1200 × 628' },
+};
+
+const PALETTES = {
+  'navy':      { bg:'#0432BA', bg2:'#021E70', text:'#FFFFFF', accent:'#00BA7F', accentText:'#002218', sub:'rgba(255,255,255,0.72)', ctaBg:'#00BA7F', ctaText:'#002218' },
+  'deep-navy': { bg:'#021E70', bg2:'#000854', text:'#FFFFFF', accent:'#FE9738', accentText:'#02152A', sub:'rgba(255,255,255,0.68)', ctaBg:'#FE9738', ctaText:'#02152A' },
+  'night':     { bg:'#02152A', bg2:'#000',    text:'#FFFFFF', accent:'#00BA7F', accentText:'#002218', sub:'rgba(255,255,255,0.65)', ctaBg:'#00BA7F', ctaText:'#002218' },
+  'green':     { bg:'#00885D', bg2:'#002218', text:'#FFFFFF', accent:'#4878FF', accentText:'#fff',    sub:'rgba(255,255,255,0.72)', ctaBg:'#4878FF', ctaText:'#fff' },
+  'orange':    { bg:'#FE9738', bg2:'#CC8B00', text:'#02152A', accent:'#0432BA', accentText:'#fff',    sub:'rgba(2,21,42,0.62)',    ctaBg:'#0432BA', ctaText:'#fff' },
+};
+
+// ── Init ─────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (apiKey) showApp();
+  setupChips('stageChips', v => curStage = v);
+  setupChips('layoutChips', v => curLayout = v);
+  document.querySelectorAll('.pal-swatch').forEach(s => {
+    s.addEventListener('click', () => {
+      document.querySelectorAll('.pal-swatch').forEach(x => x.classList.remove('active'));
+      s.classList.add('active');
+      curPal = s.dataset.p;
+      if (lastSpec) render(lastSpec); else drawPlaceholder();
+    });
+  });
+  drawPlaceholder();
+});
+
+function setupChips(id, cb) {
+  document.getElementById(id).querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => {
+      c.closest('.chip-group').querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+      cb(c.dataset.v);
+    });
+  });
+}
+
+// ── API key flow ─────────────────────────────────────────────────
+function saveKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val.startsWith('sk-ant-')) {
+    document.getElementById('apiError').textContent = 'Key should start with sk-ant-';
+    return;
+  }
+  apiKey = val;
+  sessionStorage.setItem('mf_api_key', val);
+  showApp();
+}
+function showApp() {
+  document.getElementById('apiScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+}
+function changeKey() {
+  sessionStorage.removeItem('mf_api_key');
+  apiKey = '';
+  document.getElementById('apiScreen').style.display = 'flex';
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('apiKeyInput').value = '';
+}
+
+// ── Size ─────────────────────────────────────────────────────────
+function setSize(s, btn) {
+  curSize = s;
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sizeLabel').textContent = SIZES[s].label;
+  if (lastSpec) render(lastSpec); else drawPlaceholder();
+}
+
+// ── Canvas ───────────────────────────────────────────────────────
+const canvas = document.getElementById('adCanvas');
+const ctx = canvas.getContext('2d');
+
+function setCanvasSize() {
+  const d = SIZES[curSize].display;
+  canvas.width  = SIZES[curSize].w;
+  canvas.height = SIZES[curSize].h;
+  canvas.style.width  = d.w + 'px';
+  canvas.style.height = d.h + 'px';
+}
+
+function drawPlaceholder() {
+  setCanvasSize();
+  const W = canvas.width, H = canvas.height;
+  ctx.fillStyle = '#0432BA'; ctx.fillRect(0,0,W,H);
+  drawBg(W, H, '#021E70');
+  drawLogoMark(W, H);
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = `600 ${Math.round(W*0.032)}px Open Sans,sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('Choose settings and generate', W/2, H/2);
+}
+
+function drawBg(W, H, col) {
+  ctx.save();
+  ctx.globalAlpha = 0.3;
+  ctx.fillStyle = col;
+  ctx.beginPath();
+  ctx.moveTo(W*0.52, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(W*0.28, H); ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 0.1;
+  ctx.fillStyle = '#fff';
+  const cx = W*0.82, cy = H*0.16, ds = W*0.18;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy-ds); ctx.lineTo(cx+ds*0.7, cy); ctx.lineTo(cx, cy+ds); ctx.lineTo(cx-ds*0.7, cy);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+function drawLogoMark(W, H) {
+  const x = W*0.06, y = H*0.055;
+  const ds = W*0.042;
+  ctx.save();
+  // diamond
+  ctx.fillStyle = '#00BA7F';
+  ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+  ctx.lineWidth = ds * 0.1;
+  ctx.beginPath();
+  ctx.moveTo(x+ds/2, y); ctx.lineTo(x+ds, y+ds/2); ctx.lineTo(x+ds/2, y+ds); ctx.lineTo(x, y+ds/2);
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  // bolt
+  ctx.fillStyle = '#fff';
+  ctx.font = `700 ${Math.round(ds*0.6)}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('⚡', x+ds/2, y+ds*0.72);
+  // wordmark
+  ctx.fillStyle = '#fff';
+  ctx.font = `800 ${Math.round(ds*0.82)}px Open Sans,sans-serif`;
+  ctx.textAlign = 'left';
+  ctx.fillText('MUDFLAP', x+ds*1.3, y+ds*0.76);
+  ctx.restore();
+}
+
+function wrapText(ctx, text, x, y, maxW, lh) {
+  if (!text) return 0;
+  const words = text.split(' ');
+  let line = '', lines = [];
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; }
+    else line = test;
+  }
+  if (line) lines.push(line);
+  lines.forEach((l, i) => ctx.fillText(l, x, y + i * lh));
+  return lines.length;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+function render(spec) {
+  setCanvasSize();
+  const W = canvas.width, H = canvas.height;
+  const p = PALETTES[curPal];
+  const pad = W * 0.08;
+
+  ctx.fillStyle = p.bg; ctx.fillRect(0,0,W,H);
+  drawBg(W, H, p.bg2);
+  drawLogoMark(W, H);
+
+  const logoBottom = H * 0.14;
+  const isLandscape = curSize === 'landscape';
+  const headSize = Math.round(W * (isLandscape ? 0.075 : curLayout === 'stat-forward' ? 0.1 : 0.09));
+  const subSize  = Math.round(headSize * 0.52);
+
+  let headY = logoBottom + H * 0.04;
+
+  // stat-forward: big centered number
+  if (spec.stat && curLayout === 'stat-forward') {
+    const statSize = Math.round(H * 0.2);
+    ctx.fillStyle = p.accent;
+    ctx.font = `800 ${statSize}px Open Sans,sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(spec.stat, W/2, H*0.5);
+    if (spec.statLabel) {
+      ctx.fillStyle = p.sub;
+      ctx.font = `400 ${Math.round(statSize*0.28)}px Open Sans,sans-serif`;
+      ctx.fillText(spec.statLabel, W/2, H*0.5 + statSize*0.38);
+    }
+    headY = logoBottom + headSize * 0.3;
+  }
+
+  // headline
+  ctx.fillStyle = p.text;
+  ctx.font = `700 ${headSize}px Open Sans,sans-serif`;
+  ctx.textAlign = 'left';
+  const headLines = wrapText(ctx, spec.headline || '', pad, headY + headSize, W - pad * 1.7, headSize * 1.2);
+
+  // subheadline
+  const subY = headY + headSize + headLines * headSize * 1.2 + H * 0.016;
+  ctx.fillStyle = p.sub;
+  ctx.font = `400 ${subSize}px Open Sans,sans-serif`;
+  wrapText(ctx, spec.subheadline || '', pad, subY + subSize, W - pad * 1.7, subSize * 1.4);
+
+  // savings badge — top right
+  if (spec.savings) {
+    const bh = H * 0.09, bw = bh * 2.4;
+    const bx = W - pad * 0.6 - bw, by = H * 0.055;
+    ctx.fillStyle = p.accent;
+    ctx.beginPath(); roundRect(ctx, bx, by, bw, bh, 6); ctx.fill();
+    ctx.fillStyle = p.accentText;
+    ctx.font = `700 ${Math.round(bh*0.36)}px Open Sans,sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(spec.savings, bx + bw/2, by + bh*0.66);
+  }
+
+  // CTA button
+  if (spec.cta) {
+    const ctaH = H * 0.094, ctaW = Math.min(W * 0.58, W - pad * 2);
+    const ctaX = pad, ctaY = H - ctaH - H * 0.075;
+    ctx.fillStyle = p.ctaBg;
+    ctx.beginPath(); roundRect(ctx, ctaX, ctaY, ctaW, ctaH, 7); ctx.fill();
+    ctx.fillStyle = p.ctaText;
+    ctx.font = `700 ${Math.round(ctaH * 0.41)}px Open Sans,sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(spec.cta, ctaX + ctaW/2, ctaY + ctaH*0.67);
+  }
+
+  // social proof
+  if (spec.proof) {
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    const ph = H * 0.072, pw = W * 0.44;
+    const px = W - pad * 0.6 - pw, py = H - ph - H * 0.072;
+    ctx.beginPath(); roundRect(ctx, px, py, pw, ph, 5); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = `400 ${Math.round(ph*0.35)}px Open Sans,sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(spec.proof, px + pw/2, py + ph*0.65);
+  }
+}
+
+// ── Generate ─────────────────────────────────────────────────────
+async function generate() {
+  const prompt = document.getElementById('prompt').value.trim();
+  if (!prompt) { setStatus('Add a description first.'); return; }
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true; btn.textContent = 'Generating...';
+  setStatus('Talking to Claude...');
+
+  const system = `You generate JSON specs for Mudflap social media ad visuals. Mudflap is a diesel fuel savings app for drivers and fleet managers — plain-spoken, practical, and on their side.
+
+Output ONLY valid JSON with no markdown, no preamble.
+
+Fields:
+{
+  "headline": "max 7 words, sentence case, punchy",
+  "subheadline": "max 14 words, direct and human — no exclamation points",
+  "cta": "action verb first, max 4 words (e.g. 'Get a fuel code', 'See your savings', 'Find a fuel stop')",
+  "savings": "savings callout in ¢/gal format e.g. '15 ¢/gal off' — or null",
+  "stat": "big hero stat if layout is stat-forward e.g. '$1B+' '94%' '3,600+' — or null",
+  "statLabel": "label beneath stat e.g. 'saved by Mudflap drivers' — or null",
+  "proof": "short social proof e.g. '94% of drivers recommend Mudflap' — or null"
+}
+
+Brand voice rules: human not corporate, confident not boastful, practical not patronizing. Use diesel not gas. Use drivers or carriers not truckers. Use discounts not deals or coupons. Avoid trucking clichés. No exclamation points. Funnel stage: ${curStage}. Layout style: ${curLayout}.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 600,
+        system,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (res.status === 401) { setStatus('Invalid API key — check and try again.'); btn.disabled=false; btn.textContent='Generate visual →'; return; }
+
+    const data = await res.json();
+    const raw = data.content?.map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
+    const spec = JSON.parse(raw);
+    lastSpec = spec;
+    render(spec);
+    setStatus(SIZES[curSize].label + ' · Ready to download');
+  } catch(e) {
+    setStatus('Something went wrong — try again.');
+    console.error(e);
+  }
+
+  btn.disabled = false; btn.textContent = 'Generate visual →';
+}
+
+// ── Download ─────────────────────────────────────────────────────
+function download() {
+  if (!lastSpec) { setStatus('Generate an ad first.'); return; }
+  const a = document.createElement('a');
+  a.download = `mudflap-ad-${curSize}-${Date.now()}.png`;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+function setStatus(m) { document.getElementById('statusMsg').textContent = m; }
+</script>
+</body>
+</html>
