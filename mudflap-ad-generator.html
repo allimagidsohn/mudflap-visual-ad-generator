@@ -489,19 +489,17 @@ function buildSVG(spec, fmt) {
     els.push(`<polygon points="${dx},${dy - ds/2} ${dx + ds/2},${dy} ${dx},${dy + ds/2} ${dx - ds/2},${dy}" fill="rgba(72,120,255,0.12)" stroke="rgba(72,120,255,0.2)" stroke-width="${px(2)}"/>`);
   }
 
-  // ── Logo (top left) ──
-  if (selectedAssets.has('logo')) {
-    const lsz = px(60);
-    const lx = pad;
-    const ly = py(56);
-    els.push(`<g transform="translate(${lx},${ly})">
-      <polygon points="${lsz/2},0 ${lsz},${lsz/2} ${lsz/2},${lsz} 0,${lsz/2}" fill="#00BA7F"/>
-      <polygon points="${lsz/2},0 ${lsz},${lsz/2} ${lsz/2},${lsz} 0,${lsz/2}" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="${px(2)}"/>
-      <polygon points="${lsz/2},${lsz*0.28} ${lsz*0.38},${lsz*0.58} ${lsz*0.62},${lsz*0.58}" fill="white"/>
-      <rect x="${lsz*0.44}" y="${lsz*0.58}" width="${lsz*0.12}" height="${lsz*0.18}" fill="white"/>
-    </g>
-    <text x="${lx + lsz + px(14)}" y="${ly + lsz * 0.68}" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" font-weight="700" fill="white" letter-spacing="1">MUDFLAP</text>`);
-  }
+  // ── Logo (top left) — always shown ──
+  const lsz = px(60);
+  const lx = pad;
+  const ly = py(56);
+  els.push(`<g transform="translate(${lx},${ly})">
+    <polygon points="${lsz/2},0 ${lsz},${lsz/2} ${lsz/2},${lsz} 0,${lsz/2}" fill="#00BA7F"/>
+    <polygon points="${lsz/2},0 ${lsz},${lsz/2} ${lsz/2},${lsz} 0,${lsz/2}" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="${px(2)}"/>
+    <polygon points="${lsz/2},${lsz*0.28} ${lsz*0.38},${lsz*0.58} ${lsz*0.62},${lsz*0.58}" fill="white"/>
+    <rect x="${lsz*0.44}" y="${lsz*0.58}" width="${lsz*0.12}" height="${lsz*0.18}" fill="white"/>
+  </g>
+  <text x="${lx + lsz + px(14)}" y="${ly + lsz * 0.68}" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" font-weight="700" fill="white" letter-spacing="1">MUDFLAP</text>`);
 
   // ── Badge (top right) ──
   if (spec.badgeText) {
@@ -538,9 +536,10 @@ function buildSVG(spec, fmt) {
     if (spec.subheadline) {
       els.push(wrapText(spec.subheadline, pad, subY, contentW, fs(32), s.sub, '400', w));
     }
-    // Stat below sub
+    // Stat below sub — count subheadline lines to avoid overlap
     if (spec.stat && selectedLayout !== 'Minimal') {
-      const stY = subY + py(140);
+      const subLines = spec.subheadline ? Math.ceil(spec.subheadline.length / Math.floor(contentW / (fs(32) * 0.55))) : 0;
+      const stY = subY + py(60) + (subLines * Math.round(fs(32) * 1.25));
       els.push(`<text x="${pad}" y="${stY}" font-family="'Segoe UI',sans-serif" font-size="${fs(88)}" font-weight="900" fill="${s.accent}">${spec.stat}</text>`);
       if (spec.statLabel) {
         els.push(`<text x="${pad}" y="${stY + py(56)}" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" fill="${s.sub}">${spec.statLabel}</text>`);
