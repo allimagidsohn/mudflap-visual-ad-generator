@@ -455,7 +455,7 @@ function buildSVG(spec, fmt) {
   const px = (v) => Math.round(v * (w / 1080));
   const py = (v) => Math.round(v * (h / 1080));
 
-  const pad = px(72);
+  const pad = px(88);
   const midX = w / 2;
 
   // Build elements
@@ -491,16 +491,16 @@ function buildSVG(spec, fmt) {
 
   // ── Logo (top left) ──
   if (selectedAssets.has('logo')) {
-    const lsz = px(52);
+    const lsz = px(60);
     const lx = pad;
-    const ly = py(52);
+    const ly = py(56);
     els.push(`<g transform="translate(${lx},${ly})">
       <polygon points="${lsz/2},0 ${lsz},${lsz/2} ${lsz/2},${lsz} 0,${lsz/2}" fill="#00BA7F"/>
       <polygon points="${lsz/2},0 ${lsz},${lsz/2} ${lsz/2},${lsz} 0,${lsz/2}" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="${px(2)}"/>
       <polygon points="${lsz/2},${lsz*0.28} ${lsz*0.38},${lsz*0.58} ${lsz*0.62},${lsz*0.58}" fill="white"/>
       <rect x="${lsz*0.44}" y="${lsz*0.58}" width="${lsz*0.12}" height="${lsz*0.18}" fill="white"/>
     </g>
-    <text x="${lx + lsz + px(12)}" y="${ly + lsz * 0.67}" font-family="'Segoe UI',sans-serif" font-size="${fs(22)}" font-weight="700" fill="white" letter-spacing="1">MUDFLAP</text>`);
+    <text x="${lx + lsz + px(14)}" y="${ly + lsz * 0.68}" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" font-weight="700" fill="white" letter-spacing="1">MUDFLAP</text>`);
   }
 
   // ── Badge (top right) ──
@@ -512,44 +512,44 @@ function buildSVG(spec, fmt) {
   }
 
   // ── Main content area ──
-  const contentY = isStory ? py(200) : py(160);
-  const contentW = isLandscape ? w * 0.52 : w - pad * 2;
+  const contentY = isStory ? py(220) : py(180);
+  const contentW = isLandscape ? w * 0.5 : w - pad * 2;
 
   // Stat-forward layout
   if (selectedLayout === 'Stat-forward' && spec.stat) {
-    const statY = contentY + py(80);
-    els.push(`<text x="${pad}" y="${statY}" font-family="'Segoe UI',sans-serif" font-size="${fs(140)}" font-weight="900" fill="${s.accent}" opacity="0.95">${spec.stat}</text>`);
+    const statY = contentY + py(60);
+    els.push(`<text x="${pad}" y="${statY}" font-family="'Segoe UI',sans-serif" font-size="${fs(160)}" font-weight="900" fill="${s.accent}" opacity="0.95">${spec.stat}</text>`);
     if (spec.statLabel) {
-      els.push(`<text x="${pad}" y="${statY + py(60)}" font-family="'Segoe UI',sans-serif" font-size="${fs(28)}" fill="${s.sub}">${spec.statLabel}</text>`);
+      els.push(`<text x="${pad}" y="${statY + py(64)}" font-family="'Segoe UI',sans-serif" font-size="${fs(32)}" fill="${s.sub}">${spec.statLabel}</text>`);
     }
-    // Headline below stat
-    const hlY = statY + py(140);
-    els.push(wrapText(spec.headline, pad, hlY, contentW, fs(44), 'white', '800', w));
+    const hlY = statY + py(160);
+    els.push(wrapText(spec.headline, pad, hlY, contentW, fs(52), 'white', '800', w));
     if (spec.subheadline) {
-      els.push(wrapText(spec.subheadline, pad, hlY + py(100), contentW, fs(26), s.sub, '400', w));
+      els.push(wrapText(spec.subheadline, pad, hlY + py(120), contentW, fs(30), s.sub, '400', w));
     }
   } else {
     // Bold / Clean / Minimal
     const hlY = contentY + py(20);
-    els.push(wrapText(spec.headline, pad, hlY, contentW, fs(selectedLayout === 'Minimal' ? 52 : 62), 'white', '800', w));
-    const subY = hlY + py(selectedLayout === 'Bold' ? 150 : 120);
+    const hlSize = selectedLayout === 'Minimal' ? 60 : selectedLayout === 'Bold' ? 76 : 68;
+    els.push(wrapText(spec.headline, pad, hlY, contentW, fs(hlSize), 'white', '800', w));
+    const subY = hlY + py(selectedLayout === 'Bold' ? 200 : 170);
     if (spec.subheadline) {
-      els.push(wrapText(spec.subheadline, pad, subY, contentW, fs(28), s.sub, '400', w));
+      els.push(wrapText(spec.subheadline, pad, subY, contentW, fs(32), s.sub, '400', w));
     }
     // Stat below sub
     if (spec.stat && selectedLayout !== 'Minimal') {
-      const stY = subY + py(100);
-      els.push(`<text x="${pad}" y="${stY}" font-family="'Segoe UI',sans-serif" font-size="${fs(72)}" font-weight="900" fill="${s.accent}">${spec.stat}</text>`);
+      const stY = subY + py(120);
+      els.push(`<text x="${pad}" y="${stY}" font-family="'Segoe UI',sans-serif" font-size="${fs(88)}" font-weight="900" fill="${s.accent}">${spec.stat}</text>`);
       if (spec.statLabel) {
-        els.push(`<text x="${pad}" y="${stY + py(44)}" font-family="'Segoe UI',sans-serif" font-size="${fs(22)}" fill="${s.sub}">${spec.statLabel}</text>`);
+        els.push(`<text x="${pad}" y="${stY + py(52)}" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" fill="${s.sub}">${spec.statLabel}</text>`);
       }
     }
   }
 
   // ── Asset illustrations ──
-  const assetX = isLandscape ? w * 0.56 : w - px(320);
-  const assetY = isStory ? h * 0.42 : h * 0.32;
-  const assetSz = isLandscape ? px(380) : px(300);
+  const assetX = isLandscape ? w * 0.58 : w - px(340);
+  const assetY = isStory ? h * 0.38 : h * 0.28;
+  const assetSz = isLandscape ? px(360) : px(320);
 
   if (selectedAssets.has('truck-side')) {
     els.push(drawTruckSide(assetX, assetY, assetSz, assetSz * 0.52));
@@ -569,17 +569,17 @@ function buildSVG(spec, fmt) {
 
   // ── Proof line ──
   if (spec.proof && selectedLayout !== 'Minimal') {
-    const proofY = isStory ? h * 0.82 : h * 0.78;
-    els.push(`<text x="${pad}" y="${proofY}" font-family="'Segoe UI',sans-serif" font-size="${fs(20)}" fill="rgba(255,255,255,0.6)" font-style="italic">${spec.proof}</text>`);
+    const proofY = isStory ? h * 0.84 : h * 0.80;
+    els.push(`<text x="${pad}" y="${proofY}" font-family="'Segoe UI',sans-serif" font-size="${fs(22)}" fill="rgba(255,255,255,0.6)" font-style="italic">${spec.proof}</text>`);
   }
 
   // ── CTA Button ──
   if (selectedCTA && selectedCTA !== 'No CTA') {
     const ctaLabel = spec.cta || selectedCTA;
-    const btnW = px(340); const btnH = py(72);
-    const btnX = pad; const btnY = h - py(100) - btnH;
+    const btnW = px(380); const btnH = py(80);
+    const btnX = pad; const btnY = h - py(110) - btnH;
     els.push(`<rect x="${btnX}" y="${btnY}" width="${btnW}" height="${btnH}" rx="${px(10)}" fill="${s.accent}"/>
-    <text x="${btnX + btnW/2}" y="${btnY + btnH * 0.63}" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="${fs(24)}" font-weight="700" fill="${s.bg1}">${ctaLabel}</text>`);
+    <text x="${btnX + btnW/2}" y="${btnY + btnH * 0.64}" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" font-weight="700" fill="${s.bg1}">${ctaLabel}</text>`);
   }
 
   // Shine overlay
