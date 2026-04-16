@@ -1,0 +1,3 @@
+{
+  "rewrites": [{ "source": "/", "destination": "/mudflap-ad-generator.html" }]
+}
