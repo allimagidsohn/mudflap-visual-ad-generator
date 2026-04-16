@@ -512,7 +512,9 @@ function buildSVG(spec, fmt) {
   }
 
   // ── Main content area ──
-  const contentY = isStory ? py(220) : py(180);
+  // Always start content below logo zone
+  const logoBottomY = py(56) + px(60) + py(40); // logo top + logo size + gap
+  const contentY = isStory ? Math.max(py(280), logoBottomY) : Math.max(py(220), logoBottomY);
   const contentW = isLandscape ? w * 0.5 : w - pad * 2;
 
   // Stat-forward layout
@@ -529,27 +531,27 @@ function buildSVG(spec, fmt) {
     }
   } else {
     // Bold / Clean / Minimal
-    const hlY = contentY + py(20);
+    const hlY = contentY;
     const hlSize = selectedLayout === 'Minimal' ? 60 : selectedLayout === 'Bold' ? 76 : 68;
     els.push(wrapText(spec.headline, pad, hlY, contentW, fs(hlSize), 'white', '800', w));
-    const subY = hlY + py(selectedLayout === 'Bold' ? 200 : 170);
+    const subY = hlY + py(selectedLayout === 'Bold' ? 220 : 190);
     if (spec.subheadline) {
       els.push(wrapText(spec.subheadline, pad, subY, contentW, fs(32), s.sub, '400', w));
     }
     // Stat below sub
     if (spec.stat && selectedLayout !== 'Minimal') {
-      const stY = subY + py(120);
+      const stY = subY + py(140);
       els.push(`<text x="${pad}" y="${stY}" font-family="'Segoe UI',sans-serif" font-size="${fs(88)}" font-weight="900" fill="${s.accent}">${spec.stat}</text>`);
       if (spec.statLabel) {
-        els.push(`<text x="${pad}" y="${stY + py(52)}" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" fill="${s.sub}">${spec.statLabel}</text>`);
+        els.push(`<text x="${pad}" y="${stY + py(56)}" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" fill="${s.sub}">${spec.statLabel}</text>`);
       }
     }
   }
 
-  // ── Asset illustrations ──
-  const assetX = isLandscape ? w * 0.58 : w - px(340);
-  const assetY = isStory ? h * 0.38 : h * 0.28;
-  const assetSz = isLandscape ? px(360) : px(320);
+  // ── Asset illustrations — right side, smaller, doesn't crowd text ──
+  const assetX = isLandscape ? w * 0.60 : w - px(280);
+  const assetY = isStory ? h * 0.42 : h * 0.35;
+  const assetSz = isLandscape ? px(320) : px(260);
 
   if (selectedAssets.has('truck-side')) {
     els.push(drawTruckSide(assetX, assetY, assetSz, assetSz * 0.52));
@@ -579,7 +581,7 @@ function buildSVG(spec, fmt) {
     const btnW = px(380); const btnH = py(80);
     const btnX = pad; const btnY = h - py(110) - btnH;
     els.push(`<rect x="${btnX}" y="${btnY}" width="${btnW}" height="${btnH}" rx="${px(10)}" fill="${s.accent}"/>
-    <text x="${btnX + btnW/2}" y="${btnY + btnH * 0.64}" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" font-weight="700" fill="${s.bg1}">${ctaLabel}</text>`);
+    <text x="${btnX + btnW/2}" y="${btnY + btnH * 0.64}" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" font-weight="700" fill="#021E70">${ctaLabel}</text>`);
   }
 
   // Shine overlay
