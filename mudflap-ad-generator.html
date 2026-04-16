@@ -389,10 +389,10 @@ function buildSVG(spec, fmt) {
   const { w, h } = fmt;
   const isStory = h > w, isLandscape = w > h;
   const schemes = {
-    'navy-green':    { bg1:'#021E70', bg2:'#000854', accent:'#00BA7F', sub:'rgba(255,255,255,0.80)', badge:'#00BA7F', badgeTxt:'#021E70' },
-    'blue-white':    { bg1:'#0432BA', bg2:'#021E70', accent:'#00BA7F', sub:'rgba(255,255,255,0.80)', badge:'#FE9738', badgeTxt:'#021E70' },
-    'dark-gradient': { bg1:'#02152A', bg2:'#021E70', accent:'#00BA7F', sub:'rgba(255,255,255,0.75)', badge:'#00BA7F', badgeTxt:'#021E70' },
-    'green-accent':  { bg1:'#021E70', bg2:'#0432BA', accent:'#00BA7F', sub:'rgba(255,255,255,0.80)', badge:'#FE9738', badgeTxt:'#021E70' },
+    'navy-green':    { bg1:'#0432BA', bg2:'#021E70', accent:'#00BA7F', sub:'rgba(255,255,255,0.82)', badge:'#00BA7F', badgeTxt:'#021E70' },
+    'blue-white':    { bg1:'#0432BA', bg2:'#021E70', accent:'#00BA7F', sub:'rgba(255,255,255,0.82)', badge:'#FE9738', badgeTxt:'#021E70' },
+    'dark-gradient': { bg1:'#021E70', bg2:'#000854', accent:'#00BA7F', sub:'rgba(255,255,255,0.75)', badge:'#00BA7F', badgeTxt:'#021E70' },
+    'green-accent':  { bg1:'#0432BA', bg2:'#021E70', accent:'#00BA7F', sub:'rgba(255,255,255,0.82)', badge:'#FE9738', badgeTxt:'#021E70' },
   };
   const s = schemes[spec.colorScheme] || schemes['navy-green'];
 
@@ -454,11 +454,11 @@ function buildSVG(spec, fmt) {
   const CTOP = isStory ? Math.max(q(310), LOGO_BTM) : Math.max(q(210), LOGO_BTM);
   const CW   = isLandscape ? w * 0.47 : w - PAD * 2;
 
-  const HL_SZ  = f(selectedLayout==='Minimal'?58 : selectedLayout==='Stat-forward'?54 : 72);
-  const SUB_SZ = f(30);
-  const STAT_SZ= f(92);
-  const HL_LH  = Math.round(HL_SZ * 1.22);
-  const SUB_LH = Math.round(SUB_SZ * 1.4);
+  const HL_SZ  = f(selectedLayout==='Minimal'?60 : selectedLayout==='Stat-forward'?56 : 78);
+  const SUB_SZ = f(32);
+  const STAT_SZ= f(96);
+  const HL_LH  = Math.round(HL_SZ * 1.20);
+  const SUB_LH = Math.round(SUB_SZ * 1.45);
 
   function lines(txt, maxW, fs) {
     if (!txt) return [];
@@ -488,12 +488,12 @@ function buildSVG(spec, fmt) {
     const hlBlockH = hlLns.length * HL_LH;
     els.push(renderLines(hlLns, PAD, CTOP, HL_SZ, 'white', '800', HL_LH));
 
-    const subY = CTOP + hlBlockH + q(44);
+    const subY = CTOP + hlBlockH + q(56);
     let afterSub = subY;
     if (spec.subheadline) {
       const subLns = lines(spec.subheadline, CW, SUB_SZ);
       els.push(renderLines(subLns, PAD, subY, SUB_SZ, s.sub, '400', SUB_LH));
-      afterSub = subY + subLns.length * SUB_LH + q(36);
+      afterSub = subY + subLns.length * SUB_LH + q(48);
     }
     if (spec.stat && selectedLayout !== 'Minimal') {
       const stBase = afterSub + STAT_SZ * 0.85;
