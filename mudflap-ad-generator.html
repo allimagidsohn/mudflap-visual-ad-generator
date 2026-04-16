@@ -3,348 +3,778 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mudflap Ad Visual Generator</title>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Mudflap Visual Ad Generator</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --mf-navy: #0432BA; --mf-deep-navy: #021E70; --mf-darkest: #000854;
-    --mf-green: #00BA7F; --mf-green-dark: #00885D; --mf-green-darkest: #002218;
-    --mf-orange: #FE9738; --mf-blue-mid: #4878FF; --mf-night: #02152A;
-    --mf-light-blue: #EAF4FF; --mf-border: rgba(0,0,0,0.1); --mf-border-hover: rgba(0,0,0,0.2);
-    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+    --navy: #021E70;
+    --navy-dark: #000854;
+    --blue: #0432BA;
+    --blue-light: #4878FF;
+    --green: #00BA7F;
+    --green-dark: #00885D;
+    --orange: #FE9738;
+    --white: #FFFFFF;
+    --gray-100: #F5F8FC;
+    --gray-200: #EAF4FF;
+    --gray-500: #546E7A;
+    --gray-900: #02152A;
+    --font: 'Segoe UI', system-ui, sans-serif;
   }
-  body { font-family: 'Open Sans', sans-serif; background: #F5F8FC; color: #02152A; min-height: 100vh; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--gray-100);
+    color: var(--gray-900);
+    min-height: 100vh;
+  }
 
   header {
-    background: var(--mf-deep-navy); padding: 0 2rem; height: 56px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 10;
+    background: var(--navy-dark);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
-  .header-logo { display: flex; align-items: center; gap: 9px; }
-  .header-logo svg { width: 28px; height: 28px; }
-  .header-logo span { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: 0.02em; }
-  .header-tag { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 400; margin-left: 4px; }
 
-  .main { display: flex; gap: 0; max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; align-items: flex-start; }
+  header svg { width: 32px; height: 32px; }
 
-  .controls { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; }
-  .card { background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--mf-border); padding: 18px; }
-  .card-title { font-size: 11px; font-weight: 700; color: #78909C; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
-
-  textarea#prompt {
-    width: 100%; min-height: 80px; resize: vertical;
-    font-family: 'Open Sans', sans-serif; font-size: 13px; line-height: 1.6;
-    padding: 10px 12px; border: 1px solid var(--mf-border-hover);
-    border-radius: var(--radius-sm); color: var(--mf-night); background: #F5F8FC; outline: none;
+  header h1 {
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
-  textarea#prompt:focus { border-color: var(--mf-navy); background: #fff; }
-  textarea#prompt::placeholder { color: #B0BEC5; }
 
-  .chip-group { display: flex; flex-wrap: wrap; gap: 5px; }
+  .layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    height: calc(100vh - 60px);
+  }
+
+  /* ─── LEFT PANEL ─── */
+  .panel {
+    background: white;
+    overflow-y: auto;
+    border-right: 1px solid #e0e8f0;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 10px;
+  }
+
+  .section { display: flex; flex-direction: column; }
+
+  textarea {
+    width: 100%;
+    border: 1.5px solid #dde6f0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: var(--font);
+    font-size: 14px;
+    resize: vertical;
+    min-height: 90px;
+    color: var(--gray-900);
+    transition: border-color 0.2s;
+    outline: none;
+    line-height: 1.5;
+  }
+  textarea:focus { border-color: var(--blue-light); }
+  textarea::placeholder { color: #aab8cc; }
+
+  .field-hint {
+    font-size: 12px;
+    color: #8ea0b5;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* CTA Chips */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   .chip {
-    padding: 5px 11px; font-size: 12px; font-weight: 600; border-radius: 20px;
-    border: 1px solid var(--mf-border-hover); background: transparent; color: #546E7A;
-    cursor: pointer; font-family: 'Open Sans', sans-serif; transition: all 0.12s;
+    border: 1.5px solid #dde6f0;
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: white;
+    color: var(--gray-900);
+    font-family: var(--font);
+    user-select: none;
   }
-  .chip:hover { border-color: var(--mf-navy); color: var(--mf-navy); }
-  .chip.active { background: var(--mf-light-blue); color: var(--mf-navy); border-color: var(--mf-blue-mid); }
+  .chip:hover { border-color: var(--blue-light); color: var(--blue); }
+  .chip.selected {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+    font-weight: 600;
+  }
 
-  .pal-row { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; }
-  .pal-swatch { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform 0.12s; }
-  .pal-swatch.active { border-color: var(--mf-night); transform: scale(1.18); }
+  /* Toggle chips (single select) */
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
 
+  /* Format + layout selects */
+  .select-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .sel-btn {
+    border: 1.5px solid #dde6f0;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    background: white;
+    color: var(--gray-900);
+    font-family: var(--font);
+    transition: all 0.15s;
+  }
+  .sel-btn:hover { border-color: var(--blue-light); }
+  .sel-btn.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: white;
+    font-weight: 600;
+  }
+
+  /* Asset thumbnails */
+  .assets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .asset-thumb {
+    border: 2px solid #dde6f0;
+    border-radius: 8px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: #f8fafc;
+    padding: 8px;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .asset-thumb:hover { border-color: var(--blue-light); background: #eaf4ff; }
+  .asset-thumb.selected { border-color: var(--green); background: #e8faf4; }
+  .asset-thumb svg, .asset-thumb img { width: 100%; height: 100%; object-fit: contain; }
+  .asset-thumb .asset-label {
+    position: absolute;
+    bottom: 4px;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 9px;
+    color: var(--gray-500);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  /* Background prompt */
+  input[type="text"] {
+    width: 100%;
+    border: 1.5px solid #dde6f0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--gray-900);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--blue-light); }
+  input[type="text"]::placeholder { color: #aab8cc; }
+
+  /* Stat badge */
+  .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1.5px solid #dde6f0;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    background: white;
+    transition: all 0.15s;
+    font-family: var(--font);
+  }
+  .stat-badge:hover { border-color: var(--green); }
+  .stat-badge.selected { border-color: var(--green); background: #e8faf4; color: var(--green-dark); font-weight: 600; }
+  .stat-badge .val { font-weight: 700; font-size: 13px; }
+  .stats-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* Generate button */
   .gen-btn {
-    width: 100%; padding: 11px; background: var(--mf-navy); color: #fff;
-    border: none; border-radius: var(--radius-md);
-    font-family: 'Open Sans', sans-serif; font-weight: 700; font-size: 14px;
-    cursor: pointer; transition: background 0.15s;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+    margin-top: auto;
   }
-  .gen-btn:hover { background: var(--mf-deep-navy); }
-  .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .gen-btn:hover:not(:disabled) { background: var(--navy); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(4,50,186,0.25); }
+  .gen-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-  .canvas-area { flex: 1; margin-left: 24px; }
-  .size-bar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
-  .size-btn {
-    padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: var(--radius-sm);
-    border: 1px solid var(--mf-border-hover); background: #fff; color: #546E7A;
-    cursor: pointer; font-family: 'Open Sans', sans-serif; transition: all 0.12s;
+  /* ─── RIGHT PANEL ─── */
+  .preview {
+    background: #edf0f5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
-  .size-btn.active { background: var(--mf-deep-navy); color: #fff; border-color: var(--mf-deep-navy); }
-  .size-label { font-size: 11px; color: #B0BEC5; margin-left: 6px; }
 
-  .canvas-wrap {
-    background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--mf-border);
-    padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 14px;
-    min-height: 400px; justify-content: center;
+  .preview-toolbar {
+    background: white;
+    border-bottom: 1px solid #e0e8f0;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
-  canvas#adCanvas { border-radius: 10px; display: block; max-width: 100%; max-height: 420px; box-shadow: 0 4px 24px rgba(4,50,186,0.12); }
-  .canvas-footer { display: flex; align-items: center; justify-content: space-between; width: 100%; padding-top: 4px; }
-  .status-msg { font-size: 12px; color: #78909C; }
+
+  .fmt-btn {
+    border: 1.5px solid #dde6f0;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: white;
+    font-family: var(--font);
+    transition: all 0.15s;
+    color: var(--gray-900);
+  }
+  .fmt-btn:hover { border-color: var(--blue-light); }
+  .fmt-btn.active { background: var(--navy-dark); border-color: var(--navy-dark); color: white; }
+
+  .fmt-dims {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-left: auto;
+  }
+
+  .preview-area {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+  }
+
+  .ad-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ad-canvas {
+    display: block;
+  }
+
+  .preview-footer {
+    background: white;
+    border-top: 1px solid #e0e8f0;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .preview-info { font-size: 13px; color: var(--gray-500); }
+
   .dl-btn {
-    padding: 8px 18px; font-size: 12px; font-weight: 700; border-radius: var(--radius-sm);
-    border: 1px solid var(--mf-border-hover); background: #fff; color: var(--mf-night);
-    cursor: pointer; font-family: 'Open Sans', sans-serif; transition: all 0.12s;
+    background: var(--navy-dark);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.15s;
   }
-  .dl-btn:hover { background: var(--mf-deep-navy); color: #fff; border-color: var(--mf-deep-navy); }
+  .dl-btn:hover { background: var(--blue); }
+  .dl-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  @media (max-width: 780px) {
-    .main { flex-direction: column; }
-    .controls { width: 100%; }
-    .canvas-area { margin-left: 0; margin-top: 20px; }
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: #8ea0b5;
+    text-align: center;
+  }
+  .empty-state svg { opacity: 0.3; }
+  .empty-state p { font-size: 14px; line-height: 1.5; max-width: 220px; }
+
+  .loading-ring {
+    width: 48px; height: 48px;
+    border: 4px solid #dde6f0;
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #edf2f7;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-logo">
-    <svg viewBox="0 0 28 28" fill="none">
-      <polygon points="14,1 27,14 14,27 1,14" fill="#00BA7F" stroke="#fff" stroke-width="1.5"/>
-      <text x="14" y="19" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff" font-family="sans-serif">⚡</text>
-    </svg>
-    <span>MUDFLAP <span class="header-tag">Ad Generator</span></span>
-  </div>
+  <!-- Mudflap diamond logo SVG -->
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 5 L95 50 L50 95 L5 50 Z" fill="#00BA7F" stroke="#00BA7F" stroke-width="2"/>
+    <path d="M50 12 L88 50 L50 88 L12 50 Z" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+    <path d="M42 35 L58 35 L65 50 L50 65 L35 50 Z" fill="white"/>
+    <polygon points="50,38 46,48 54,48" fill="#00BA7F"/>
+    <rect x="48" y="48" width="4" height="8" fill="#00BA7F"/>
+  </svg>
+  <h1>Mudflap · Visual Ad Generator</h1>
 </header>
 
-<div class="main">
-  <div class="controls">
-    <div class="card">
-      <div class="card-title">Describe your ad</div>
-      <textarea id="prompt" placeholder="e.g. Diesel savings promo — 15 ¢/gal off at 3,600+ stops, targeting fleet managers with 5+ trucks"></textarea>
+<div class="layout">
+
+  <!-- ─── LEFT PANEL ─── -->
+  <div class="panel">
+
+    <div class="section">
+      <div class="section-label">What to communicate</div>
+      <textarea id="message" placeholder="e.g. Fleet managers can save up to $1/gal on diesel with no credit check and no hidden fees"></textarea>
+      <div class="field-hint">Describe the key claim, benefit, or insight you want this ad to land.</div>
     </div>
-    <div class="card">
-      <div class="card-title">Funnel stage</div>
-      <div class="chip-group" id="stageChips">
-        <button class="chip active" data-v="Awareness">Awareness</button>
-        <button class="chip" data-v="Consideration">Consideration</button>
-        <button class="chip" data-v="Conversion">Conversion</button>
-        <button class="chip" data-v="Retargeting">Retargeting</button>
+
+    <hr class="divider">
+
+    <div class="section">
+      <div class="section-label">Call to action</div>
+      <div class="chips" id="cta-chips">
+        <div class="chip" data-value="Apply for the card">Apply for the card</div>
+        <div class="chip" data-value="Download the app">Download the app</div>
+        <div class="chip" data-value="Go to website">Go to website</div>
+        <div class="chip" data-value="Download the playbook">Download the playbook</div>
+        <div class="chip" data-value="Calculate your savings">Calculate your savings</div>
+        <div class="chip" data-value="Share with a friend">Share with a friend</div>
+        <div class="chip" data-value="Follow on social">Follow on social</div>
+        <div class="chip" data-value="No CTA">No CTA</div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">Layout style</div>
-      <div class="chip-group" id="layoutChips">
-        <button class="chip active" data-v="bold">Bold</button>
-        <button class="chip" data-v="clean">Clean</button>
-        <button class="chip" data-v="stat-forward">Stat-forward</button>
-        <button class="chip" data-v="minimal">Minimal</button>
+
+    <hr class="divider">
+
+    <div class="section">
+      <div class="section-label">Funnel stage</div>
+      <div class="chip-group" id="funnel-chips">
+        <div class="chip selected" data-value="Awareness">Awareness</div>
+        <div class="chip" data-value="Consideration">Consideration</div>
+        <div class="chip" data-value="Conversion">Conversion</div>
+        <div class="chip" data-value="Retargeting">Retargeting</div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">Color palette</div>
-      <div class="pal-row" id="palRow">
-        <div class="pal-swatch active" data-p="navy"      style="background:#0432BA" title="Mudflap Navy"></div>
-        <div class="pal-swatch"        data-p="deep-navy" style="background:#021E70" title="Deep Navy"></div>
-        <div class="pal-swatch"        data-p="night"     style="background:#02152A" title="Night Dark"></div>
-        <div class="pal-swatch"        data-p="green"     style="background:#00885D" title="Mudflap Green"></div>
-        <div class="pal-swatch"        data-p="orange"    style="background:#FE9738" title="Orange"></div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <div class="section-label">Layout style</div>
+      <div class="chip-group" id="layout-chips">
+        <div class="chip selected" data-value="Bold">Bold</div>
+        <div class="chip" data-value="Clean">Clean</div>
+        <div class="chip" data-value="Stat-forward">Stat-forward</div>
+        <div class="chip" data-value="Minimal">Minimal</div>
       </div>
     </div>
-    <button class="gen-btn" id="genBtn" onclick="generate()">Generate visual →</button>
+
+    <hr class="divider">
+
+    <div class="section">
+      <div class="section-label">Brand assets to include</div>
+      <div class="assets-grid" id="assets-grid">
+
+        <!-- Logo -->
+        <div class="asset-thumb selected" data-asset="logo" title="Mudflap Logo">
+          <svg viewBox="0 0 80 80" fill="none"><path d="M40 4 L76 40 L40 76 L4 40 Z" fill="#00BA7F"/><path d="M40 10 L70 40 L40 70 L10 40 Z" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><path d="M33 27 L47 27 L54 40 L40 53 L26 40 Z" fill="white"/><polygon points="40,30 36,40 44,40" fill="#00BA7F"/><rect x="38" y="40" width="4" height="7" fill="#00BA7F"/></svg>
+          <div class="asset-label">Logo</div>
+        </div>
+
+        <!-- Semi truck front -->
+        <div class="asset-thumb" data-asset="truck-front" title="Semi Truck Front">
+          <svg viewBox="0 0 80 60" fill="none"><rect x="10" y="20" width="60" height="30" rx="4" fill="#0432BA"/><rect x="14" y="24" width="24" height="16" rx="2" fill="#4878FF"/><rect x="14" y="24" width="24" height="8" rx="2" fill="#92BEFF" opacity="0.7"/><rect x="42" y="28" width="24" height="18" rx="2" fill="#021E70"/><circle cx="20" cy="52" r="5" fill="#02152A"/><circle cx="20" cy="52" r="3" fill="#546E7A"/><circle cx="60" cy="52" r="5" fill="#02152A"/><circle cx="60" cy="52" r="3" fill="#546E7A"/><rect x="6" y="32" width="8" height="4" rx="2" fill="#FFAE00"/><rect x="66" y="32" width="8" height="4" rx="2" fill="#FFAE00"/><rect x="30" y="44" width="4" height="6" fill="#021E70"/><rect x="46" y="44" width="4" height="6" fill="#021E70"/></svg>
+          <div class="asset-label">Truck Front</div>
+        </div>
+
+        <!-- Semi truck side -->
+        <div class="asset-thumb" data-asset="truck-side" title="Semi Truck Side">
+          <svg viewBox="0 0 100 50" fill="none"><rect x="40" y="8" width="55" height="30" rx="3" fill="#0432BA"/><rect x="5" y="14" width="38" height="24" rx="3" fill="#021E70"/><rect x="7" y="16" width="18" height="14" rx="2" fill="#4878FF" opacity="0.8"/><rect x="7" y="16" width="18" height="7" rx="2" fill="#92BEFF" opacity="0.6"/><rect x="42" y="10" width="50" height="5" fill="#4878FF" opacity="0.4"/><circle cx="20" cy="42" r="6" fill="#02152A"/><circle cx="20" cy="42" r="3.5" fill="#455A64"/><circle cx="55" cy="42" r="6" fill="#02152A"/><circle cx="55" cy="42" r="3.5" fill="#455A64"/><circle cx="75" cy="42" r="6" fill="#02152A"/><circle cx="75" cy="42" r="3.5" fill="#455A64"/><rect x="0" y="26" width="7" height="6" rx="1" fill="#FFAE00"/></svg>
+          <div class="asset-label">Truck Side</div>
+        </div>
+
+        <!-- Fuel pump -->
+        <div class="asset-thumb" data-asset="fuel-pump" title="Fuel Pump">
+          <svg viewBox="0 0 60 80" fill="none"><rect x="10" y="10" width="32" height="55" rx="4" fill="#00BA7F"/><rect x="14" y="14" width="24" height="16" rx="2" fill="white" opacity="0.9"/><text x="26" y="26" text-anchor="middle" font-size="9" fill="#00885D" font-weight="bold">$3.95</text><rect x="18" y="36" width="16" height="20" rx="2" fill="#00885D"/><path d="M42 20 Q52 20 52 30 L52 45" stroke="#021E70" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="52" cy="47" r="4" fill="#021E70"/><rect x="6" y="65" width="40" height="6" rx="2" fill="#021E70"/></svg>
+          <div class="asset-label">Fuel Pump</div>
+        </div>
+
+        <!-- Savings / piggy -->
+        <div class="asset-thumb" data-asset="savings" title="Savings Icon">
+          <svg viewBox="0 0 70 70" fill="none"><ellipse cx="35" cy="40" rx="25" ry="20" fill="#5CD3AD"/><circle cx="48" cy="32" r="8" fill="#5CD3AD"/><circle cx="52" cy="30" r="3" fill="white"/><ellipse cx="50" cy="38" rx="4" ry="3" fill="#00885D"/><path d="M20 38 Q15 44 18 50 L14 56 L22 54" stroke="#00885D" stroke-width="2" fill="none"/><path d="M24 55 L30 60 L36 55" stroke="#00885D" stroke-width="2" fill="none"/><path d="M36 55 L42 60 L48 55" stroke="#00885D" stroke-width="2" fill="none"/><rect x="30" y="20" width="10" height="16" rx="2" fill="#FFAE00"/><path d="M35 16 L35 20 M32 17 L35 20 L38 17" stroke="#FFAE00" stroke-width="2" stroke-linecap="round"/></svg>
+          <div class="asset-label">Savings</div>
+        </div>
+
+        <!-- Fuel card -->
+        <div class="asset-thumb" data-asset="fuel-card" title="Mudflap Fuel Card">
+          <svg viewBox="0 0 90 60" fill="none"><rect x="2" y="8" width="86" height="52" rx="6" fill="#0432BA"/><path d="M2 8 Q45 30 88 8" fill="#4878FF" opacity="0.3"/><path d="M2 35 Q45 55 88 35" fill="#00BA7F" opacity="0.2"/><rect x="8" y="16" width="20" height="14" rx="2" fill="#FFAE00" opacity="0.9"/><text x="45" y="28" text-anchor="middle" font-size="8" fill="white" font-weight="bold">MUDFLAP</text><text x="45" y="42" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.7)">•••• •••• •••• 4567</text><text x="75" y="54" text-anchor="middle" font-size="8" fill="white" font-weight="600">VISA</text></svg>
+          <div class="asset-label">Fuel Card</div>
+        </div>
+
+        <!-- Diamond pattern bg -->
+        <div class="asset-thumb" data-asset="diamond-bg" title="Diamond Background">
+          <svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" fill="#021E70"/><path d="M30 5 L55 30 L30 55 L5 30 Z" fill="none" stroke="#4878FF" stroke-width="1.5" opacity="0.5"/><path d="M30 12 L48 30 L30 48 L12 30 Z" fill="none" stroke="#00BA7F" stroke-width="1" opacity="0.4"/><circle cx="30" cy="30" r="4" fill="#00BA7F" opacity="0.6"/></svg>
+          <div class="asset-label">BG Pattern</div>
+        </div>
+
+        <!-- Stat callout -->
+        <div class="asset-thumb" data-asset="stat-callout" title="Stat Callout Badge">
+          <svg viewBox="0 0 70 50" fill="none"><rect x="2" y="2" width="66" height="46" rx="6" fill="#00BA7F"/><text x="35" y="24" text-anchor="middle" font-size="16" fill="white" font-weight="bold">$1/gal</text><text x="35" y="38" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.85)">savings off</text></svg>
+          <div class="asset-label">Stat Badge</div>
+        </div>
+
+        <!-- Map/network dots -->
+        <div class="asset-thumb" data-asset="network" title="Network Map">
+          <svg viewBox="0 0 70 60" fill="none"><rect width="70" height="60" fill="#EAF4FF" rx="4"/><circle cx="15" cy="20" r="3" fill="#0432BA"/><circle cx="35" cy="12" r="3" fill="#0432BA"/><circle cx="55" cy="18" r="3" fill="#0432BA"/><circle cx="22" cy="38" r="3" fill="#00BA7F"/><circle cx="45" cy="32" r="3" fill="#00BA7F"/><circle cx="60" cy="42" r="3" fill="#0432BA"/><circle cx="10" cy="48" r="3" fill="#0432BA"/><line x1="15" y1="20" x2="35" y2="12" stroke="#4878FF" stroke-width="1" opacity="0.5"/><line x1="35" y1="12" x2="55" y2="18" stroke="#4878FF" stroke-width="1" opacity="0.5"/><line x1="22" y1="38" x2="45" y2="32" stroke="#00BA7F" stroke-width="1" opacity="0.5"/><line x1="45" y1="32" x2="60" y2="42" stroke="#00BA7F" stroke-width="1" opacity="0.5"/></svg>
+          <div class="asset-label">Network</div>
+        </div>
+
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <div class="section-label">Key stat to highlight (optional)</div>
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-badge" data-value="Up to $1/gal off"><span class="val">$1/gal</span> off</div>
+        <div class="stat-badge" data-value="Over $1 billion saved"><span class="val">$1B+</span> saved</div>
+        <div class="stat-badge" data-value="94% recommend Mudflap"><span class="val">94%</span> recommend</div>
+        <div class="stat-badge" data-value="3,600+ fuel stops"><span class="val">3,600+</span> stops</div>
+        <div class="stat-badge" data-value="515K+ drivers"><span class="val">515K+</span> drivers</div>
+        <div class="stat-badge" data-value="No credit check"><span class="val">Zero</span> credit check</div>
+        <div class="stat-badge" data-value="No hidden fees"><span class="val">No</span> hidden fees</div>
+        <div class="stat-badge" data-value="24/7 live support"><span class="val">24/7</span> support</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <div class="section-label">Background / visual direction (optional)</div>
+      <input type="text" id="bg-prompt" placeholder="e.g. open highway at dusk, semi trucks on I-80, fuel stop aerial view…">
+      <div class="field-hint">Describe a scene or mood for the background. AI will interpret this for the visual style.</div>
+    </div>
+
+    <button class="gen-btn" id="gen-btn" onclick="generate()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Generate visual →
+    </button>
+
   </div>
 
-  <div class="canvas-area">
-    <div class="size-bar">
-      <button class="size-btn active" onclick="setSize('square',this)">Square 1:1</button>
-      <button class="size-btn" onclick="setSize('story',this)">Story 9:16</button>
-      <button class="size-btn" onclick="setSize('landscape',this)">Landscape 1.91:1</button>
-      <span class="size-label" id="sizeLabel">1080 × 1080</span>
+  <!-- ─── RIGHT PANEL ─── -->
+  <div class="preview">
+
+    <div class="preview-toolbar">
+      <button class="fmt-btn active" data-fmt="square" onclick="setFormat('square', this)">Square 1:1</button>
+      <button class="fmt-btn" data-fmt="story" onclick="setFormat('story', this)">Story 9:16</button>
+      <button class="fmt-btn" data-fmt="landscape" onclick="setFormat('landscape', this)">Landscape 1.91:1</button>
+      <span class="fmt-dims" id="fmt-dims">1080 × 1080</span>
     </div>
-    <div class="canvas-wrap">
-      <canvas id="adCanvas"></canvas>
-      <div class="canvas-footer">
-        <span class="status-msg" id="statusMsg">Choose your settings and generate</span>
-        <button class="dl-btn" onclick="download()">Download PNG</button>
+
+    <div class="preview-area" id="preview-area">
+      <div class="empty-state" id="empty-state">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><path d="M32 4 L60 32 L32 60 L4 32 Z" stroke="#ccd5e0" stroke-width="3" fill="none"/><circle cx="32" cy="32" r="6" fill="#ccd5e0"/></svg>
+        <p>Fill in the fields and click Generate visual to create your ad</p>
       </div>
     </div>
+
+    <div class="preview-footer">
+      <span class="preview-info" id="preview-info">Ready</span>
+      <button class="dl-btn" id="dl-btn" onclick="downloadPNG()" disabled>Download PNG</button>
+    </div>
+
   </div>
 </div>
 
 <script>
-let curSize='square', curPal='navy', curStage='Awareness', curLayout='bold', lastSpec=null;
+// ─── State ───
+let currentSVG = null;
+let selectedCTA = null;
+let selectedFunnel = 'Awareness';
+let selectedLayout = 'Bold';
+let selectedAssets = new Set(['logo']);
+let selectedStat = null;
+let currentFormat = 'square';
 
-const SIZES = {
-  square:    { w:1080, h:1080, display:{w:400,h:400}, label:'1080 × 1080' },
-  story:     { w:1080, h:1920, display:{w:225,h:400}, label:'1080 × 1920' },
-  landscape: { w:1200, h:628,  display:{w:400,h:209}, label:'1200 × 628'  },
+const FORMATS = {
+  square:    { w: 1080, h: 1080, label: '1080 × 1080', viewW: 420, viewH: 420 },
+  story:     { w: 1080, h: 1920, label: '1080 × 1920', viewW: 260, viewH: 462 },
+  landscape: { w: 1920, h: 1080, label: '1920 × 1080', viewW: 580, viewH: 326 },
 };
-const PALETTES = {
-  'navy':      { bg:'#0432BA', bg2:'#021E70', text:'#FFFFFF', accent:'#00BA7F', accentText:'#002218', sub:'rgba(255,255,255,0.72)', ctaBg:'#00BA7F', ctaText:'#002218' },
-  'deep-navy': { bg:'#021E70', bg2:'#000854', text:'#FFFFFF', accent:'#FE9738', accentText:'#02152A', sub:'rgba(255,255,255,0.68)', ctaBg:'#FE9738', ctaText:'#02152A' },
-  'night':     { bg:'#02152A', bg2:'#000',    text:'#FFFFFF', accent:'#00BA7F', accentText:'#002218', sub:'rgba(255,255,255,0.65)', ctaBg:'#00BA7F', ctaText:'#002218' },
-  'green':     { bg:'#00885D', bg2:'#002218', text:'#FFFFFF', accent:'#4878FF', accentText:'#fff',    sub:'rgba(255,255,255,0.72)', ctaBg:'#4878FF', ctaText:'#fff'    },
-  'orange':    { bg:'#FE9738', bg2:'#CC8B00', text:'#02152A', accent:'#0432BA', accentText:'#fff',    sub:'rgba(2,21,42,0.62)',    ctaBg:'#0432BA', ctaText:'#fff'    },
-};
 
-const canvas = document.getElementById('adCanvas');
-const ctx = canvas.getContext('2d');
-
-window.addEventListener('DOMContentLoaded', () => {
-  setupChips('stageChips', v => curStage = v);
-  setupChips('layoutChips', v => curLayout = v);
-  document.querySelectorAll('.pal-swatch').forEach(s => {
-    s.addEventListener('click', () => {
-      document.querySelectorAll('.pal-swatch').forEach(x => x.classList.remove('active'));
-      s.classList.add('active'); curPal = s.dataset.p;
-      if (lastSpec) render(lastSpec); else drawPlaceholder();
-    });
-  });
-  drawPlaceholder();
+// ─── Chip handlers ───
+document.getElementById('cta-chips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('#cta-chips .chip').forEach(c => c.classList.remove('selected'));
+  chip.classList.add('selected');
+  selectedCTA = chip.dataset.value;
 });
 
-function setupChips(id, cb) {
-  document.getElementById(id).querySelectorAll('.chip').forEach(c => {
-    c.addEventListener('click', () => {
-      c.closest('.chip-group').querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
-      c.classList.add('active'); cb(c.dataset.v);
-    });
-  });
-}
+document.getElementById('funnel-chips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('#funnel-chips .chip').forEach(c => c.classList.remove('selected'));
+  chip.classList.add('selected');
+  selectedFunnel = chip.dataset.value;
+});
 
-function setSize(s, btn) {
-  curSize = s;
-  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+document.getElementById('layout-chips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('#layout-chips .chip').forEach(c => c.classList.remove('selected'));
+  chip.classList.add('selected');
+  selectedLayout = chip.dataset.value;
+});
+
+// Assets (multi-select)
+document.getElementById('assets-grid').addEventListener('click', e => {
+  const thumb = e.target.closest('.asset-thumb');
+  if (!thumb) return;
+  const key = thumb.dataset.asset;
+  if (selectedAssets.has(key)) { selectedAssets.delete(key); thumb.classList.remove('selected'); }
+  else { selectedAssets.add(key); thumb.classList.add('selected'); }
+});
+
+// Stats (single-select toggle)
+document.getElementById('stats-grid').addEventListener('click', e => {
+  const badge = e.target.closest('.stat-badge');
+  if (!badge) return;
+  if (badge.classList.contains('selected')) {
+    badge.classList.remove('selected');
+    selectedStat = null;
+  } else {
+    document.querySelectorAll('.stat-badge').forEach(b => b.classList.remove('selected'));
+    badge.classList.add('selected');
+    selectedStat = badge.dataset.value;
+  }
+});
+
+// Format
+function setFormat(fmt, btn) {
+  currentFormat = fmt;
+  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('sizeLabel').textContent = SIZES[s].label;
-  if (lastSpec) render(lastSpec); else drawPlaceholder();
+  document.getElementById('fmt-dims').textContent = FORMATS[fmt].label;
+  if (currentSVG) renderSVG(currentSVG);
 }
 
-function setCanvasSize() {
-  const d = SIZES[curSize].display;
-  canvas.width  = SIZES[curSize].w; canvas.height = SIZES[curSize].h;
-  canvas.style.width = d.w+'px';   canvas.style.height = d.h+'px';
-}
-
-function drawPlaceholder() {
-  setCanvasSize();
-  const W=canvas.width, H=canvas.height;
-  ctx.fillStyle='#0432BA'; ctx.fillRect(0,0,W,H);
-  drawBg(W,H,'#021E70'); drawLogoMark(W,H);
-  ctx.fillStyle='rgba(255,255,255,0.3)';
-  ctx.font=`600 ${Math.round(W*0.032)}px Open Sans,sans-serif`;
-  ctx.textAlign='center';
-  ctx.fillText('Choose settings and generate', W/2, H/2);
-}
-
-function drawBg(W,H,col) {
-  ctx.save(); ctx.globalAlpha=0.3; ctx.fillStyle=col;
-  ctx.beginPath(); ctx.moveTo(W*0.52,0); ctx.lineTo(W,0); ctx.lineTo(W,H); ctx.lineTo(W*0.28,H); ctx.closePath(); ctx.fill();
-  ctx.globalAlpha=0.1; ctx.fillStyle='#fff';
-  const cx=W*0.82, cy=H*0.16, ds=W*0.18;
-  ctx.beginPath(); ctx.moveTo(cx,cy-ds); ctx.lineTo(cx+ds*0.7,cy); ctx.lineTo(cx,cy+ds); ctx.lineTo(cx-ds*0.7,cy); ctx.closePath(); ctx.fill();
-  ctx.restore();
-}
-
-function drawLogoMark(W,H) {
-  const x=W*0.06, y=H*0.055, ds=W*0.042;
-  ctx.save();
-  ctx.fillStyle='#00BA7F'; ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=ds*0.1;
-  ctx.beginPath(); ctx.moveTo(x+ds/2,y); ctx.lineTo(x+ds,y+ds/2); ctx.lineTo(x+ds/2,y+ds); ctx.lineTo(x,y+ds/2); ctx.closePath(); ctx.fill(); ctx.stroke();
-  ctx.fillStyle='#fff'; ctx.font=`700 ${Math.round(ds*0.6)}px sans-serif`; ctx.textAlign='center';
-  ctx.fillText('⚡', x+ds/2, y+ds*0.72);
-  ctx.fillStyle='#fff'; ctx.font=`800 ${Math.round(ds*0.82)}px Open Sans,sans-serif`; ctx.textAlign='left';
-  ctx.fillText('MUDFLAP', x+ds*1.3, y+ds*0.76);
-  ctx.restore();
-}
-
-function wrapText(ctx,text,x,y,maxW,lh) {
-  if(!text) return 0;
-  const words=text.split(' '); let line='', lines=[];
-  for(const w of words) {
-    const test=line?line+' '+w:w;
-    if(ctx.measureText(test).width>maxW&&line){lines.push(line);line=w;}else line=test;
-  }
-  if(line) lines.push(line);
-  lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lh));
-  return lines.length;
-}
-
-function roundRect(ctx,x,y,w,h,r) {
-  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
-}
-
-function render(spec) {
-  setCanvasSize();
-  const W=canvas.width, H=canvas.height, p=PALETTES[curPal], pad=W*0.08;
-  ctx.fillStyle=p.bg; ctx.fillRect(0,0,W,H);
-  drawBg(W,H,p.bg2); drawLogoMark(W,H);
-
-  const isLandscape=curSize==='landscape';
-  const headSize=Math.round(W*(isLandscape?0.075:curLayout==='stat-forward'?0.1:0.09));
-  const subSize=Math.round(headSize*0.52);
-  let headY=H*0.14+H*0.04;
-
-  if(spec.stat&&curLayout==='stat-forward') {
-    const ss=Math.round(H*0.2);
-    ctx.fillStyle=p.accent; ctx.font=`800 ${ss}px Open Sans,sans-serif`; ctx.textAlign='center';
-    ctx.fillText(spec.stat,W/2,H*0.5);
-    if(spec.statLabel){ ctx.fillStyle=p.sub; ctx.font=`400 ${Math.round(ss*0.28)}px Open Sans,sans-serif`; ctx.fillText(spec.statLabel,W/2,H*0.5+ss*0.38); }
-    headY=H*0.14+headSize*0.3;
-  }
-
-  ctx.fillStyle=p.text; ctx.font=`700 ${headSize}px Open Sans,sans-serif`; ctx.textAlign='left';
-  const hl=wrapText(ctx,spec.headline||'',pad,headY+headSize,W-pad*1.7,headSize*1.2);
-
-  const subY=headY+headSize+hl*headSize*1.2+H*0.016;
-  ctx.fillStyle=p.sub; ctx.font=`400 ${subSize}px Open Sans,sans-serif`;
-  wrapText(ctx,spec.subheadline||'',pad,subY+subSize,W-pad*1.7,subSize*1.4);
-
-  if(spec.savings) {
-    const bh=H*0.09,bw=bh*2.4,bx=W-pad*0.6-bw,by=H*0.055;
-    ctx.fillStyle=p.accent; ctx.beginPath(); roundRect(ctx,bx,by,bw,bh,6); ctx.fill();
-    ctx.fillStyle=p.accentText; ctx.font=`700 ${Math.round(bh*0.36)}px Open Sans,sans-serif`; ctx.textAlign='center';
-    ctx.fillText(spec.savings,bx+bw/2,by+bh*0.66);
-  }
-
-  if(spec.cta) {
-    const ctaH=H*0.094,ctaW=Math.min(W*0.58,W-pad*2),ctaX=pad,ctaY=H-ctaH-H*0.075;
-    ctx.fillStyle=p.ctaBg; ctx.beginPath(); roundRect(ctx,ctaX,ctaY,ctaW,ctaH,7); ctx.fill();
-    ctx.fillStyle=p.ctaText; ctx.font=`700 ${Math.round(ctaH*0.41)}px Open Sans,sans-serif`; ctx.textAlign='center';
-    ctx.fillText(spec.cta,ctaX+ctaW/2,ctaY+ctaH*0.67);
-  }
-
-  if(spec.proof) {
-    const ph=H*0.072,pw=W*0.44,px=W-pad*0.6-pw,py=H-ph-H*0.072;
-    ctx.fillStyle='rgba(255,255,255,0.1)'; ctx.beginPath(); roundRect(ctx,px,py,pw,ph,5); ctx.fill();
-    ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font=`400 ${Math.round(ph*0.35)}px Open Sans,sans-serif`; ctx.textAlign='center';
-    ctx.fillText(spec.proof,px+pw/2,py+ph*0.65);
-  }
-}
-
+// ─── Generate ───
 async function generate() {
-  const prompt=document.getElementById('prompt').value.trim();
-  if(!prompt){setStatus('Add a description first.');return;}
-  const btn=document.getElementById('genBtn');
-  btn.disabled=true; btn.textContent='Generating...'; setStatus('Generating...');
-  try {
-    const res=await fetch('/api/generate',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({prompt,stage:curStage,layout:curLayout})
-    });
-    if(!res.ok){const e=await res.json();throw new Error(JSON.stringify(e));}
-    const spec=await res.json();
-    lastSpec=spec; render(spec);
-    setStatus(SIZES[curSize].label+' · Ready to download');
-  } catch(e){
-    setStatus('Something went wrong — try again.');
-    console.error(e);
+  const message = document.getElementById('message').value.trim();
+  const bgPrompt = document.getElementById('bg-prompt').value.trim();
+
+  if (!message) {
+    document.getElementById('message').focus();
+    return;
   }
-  btn.disabled=false; btn.textContent='Generate visual →';
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="loading-ring" style="width:18px;height:18px;border-width:3px"></div> Generating…';
+
+  const area = document.getElementById('preview-area');
+  area.innerHTML = '<div class="empty-state"><div class="loading-ring"></div><p>Building your ad…</p></div>';
+
+  const fmt = FORMATS[currentFormat];
+  const assetList = [...selectedAssets].join(', ');
+
+  const prompt = `You are an expert ad designer for Mudflap, a fuel savings app for trucking fleets. Generate a complete, production-quality SVG ad.
+
+BRAND GUIDELINES:
+- Colors: Navy #021E70, Blue #0432BA, Light Blue #4878FF, Green #00BA7F, Dark Green #00885D, Orange #FE9738, White #FFFFFF
+- Voice: Human, confident, practical, not boastful or try-hard
+- Target: Fleet managers / owner-operators (Heavy 5+ trucks)
+
+AD SPECS:
+- Canvas: ${fmt.w} × ${fmt.h}px
+- Format: ${currentFormat === 'square' ? 'Square 1:1' : currentFormat === 'story' ? 'Story 9:16' : 'Landscape 1.91:1'}
+- Layout style: ${selectedLayout}
+- Funnel stage: ${selectedFunnel}
+
+CONTENT TO COMMUNICATE:
+${message}
+
+${selectedCTA ? `CALL TO ACTION: "${selectedCTA}"` : 'NO CTA BUTTON'}
+${selectedStat ? `KEY STAT TO FEATURE PROMINENTLY: "${selectedStat}"` : ''}
+${bgPrompt ? `VISUAL/BACKGROUND DIRECTION: ${bgPrompt}` : ''}
+BRAND ASSETS TO INCLUDE: ${assetList || 'logo only'}
+
+DESIGN INSTRUCTIONS:
+- Start with a dark navy or blue background (#021E70 or #0432BA) — use gradients, diagonal shapes, or geometric forms for depth
+- Include the Mudflap logo (diamond shape with lightning bolt) in the top-left: a rotated square/diamond in green #00BA7F containing a white lightning bolt shape
+- If "truck-front" or "truck-side" is in assets, draw a realistic-looking semi truck using SVG shapes
+- If "fuel-pump" is in assets, draw a stylized fuel pump
+- If "fuel-card" is in assets, draw a credit-card shaped element with Mudflap branding
+- If "savings" is in assets, draw a piggy bank or wallet with coin/money visual
+- If "network" is in assets, draw connected dots suggesting a nationwide network
+- If "diamond-bg" is in assets, use a large diamond/rhombus as a background shape element
+- If "stat-callout" is in assets, create a green badge/pill with the key stat
+- Use bold white typography for the headline (40-60px equivalent scaled to canvas)
+- Layout: if Bold, use large type and strong diagonal shapes; if Clean, use grid and whitespace; if Stat-forward, make the number the hero; if Minimal, strip back to essentials
+- CTA button: green (#00BA7F) rounded rectangle with dark text, placed near bottom
+- Overall: make it look like a real Meta/Facebook ad — professional, scroll-stopping, on-brand
+
+CRITICAL: Output ONLY a valid SVG element starting with <svg and ending with </svg>. No markdown, no explanation, no code fences. The SVG must have viewBox="0 0 ${fmt.w} ${fmt.h}" and width="${fmt.w}" height="${fmt.h}".`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    const text = data.content?.find(b => b.type === 'text')?.text || '';
+
+    // Extract SVG
+    const svgMatch = text.match(/<svg[\s\S]*<\/svg>/);
+    if (!svgMatch) throw new Error('No SVG in response');
+
+    currentSVG = svgMatch[0];
+    renderSVG(currentSVG);
+    document.getElementById('dl-btn').disabled = false;
+    document.getElementById('preview-info').textContent = `${fmt.label} · Ready to download`;
+
+  } catch (err) {
+    area.innerHTML = `<div class="empty-state"><p style="color:#e53e3e">Generation failed: ${err.message}<br><br>Try again or simplify your description.</p></div>`;
+    document.getElementById('preview-info').textContent = 'Error — try again';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Generate visual →';
 }
 
-function download() {
-  if(!lastSpec){setStatus('Generate an ad first.');return;}
-  const a=document.createElement('a');
-  a.download=`mudflap-ad-${curSize}-${Date.now()}.png`;
-  a.href=canvas.toDataURL('image/png'); a.click();
+function renderSVG(svg) {
+  const fmt = FORMATS[currentFormat];
+  const scale = Math.min(fmt.viewW / fmt.w, fmt.viewH / fmt.h);
+  const dispW = Math.round(fmt.w * scale);
+  const dispH = Math.round(fmt.h * scale);
+
+  // Inject correct dimensions into SVG
+  let displaySVG = svg
+    .replace(/width="[^"]*"/, `width="${dispW}"`)
+    .replace(/height="[^"]*"/, `height="${dispH}"`);
+
+  const area = document.getElementById('preview-area');
+  area.innerHTML = `
+    <div class="ad-wrapper" style="width:${dispW}px;height:${dispH}px;">
+      ${displaySVG}
+    </div>
+  `;
+  document.getElementById('empty-state') && (document.getElementById('empty-state').style.display = 'none');
 }
 
-function setStatus(m){document.getElementById('statusMsg').textContent=m;}
+// ─── Download ───
+async function downloadPNG() {
+  if (!currentSVG) return;
+  const fmt = FORMATS[currentFormat];
+  const btn = document.getElementById('dl-btn');
+  btn.textContent = 'Preparing…';
+  btn.disabled = true;
+
+  try {
+    // Full resolution SVG
+    let fullSVG = currentSVG
+      .replace(/width="[^"]*"/, `width="${fmt.w}"`)
+      .replace(/height="[^"]*"/, `height="${fmt.h}"`);
+
+    const blob = new Blob([fullSVG], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = fmt.w;
+      canvas.height = fmt.h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+
+      canvas.toBlob(pngBlob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(pngBlob);
+        a.download = `mudflap-ad-${currentFormat}-${Date.now()}.png`;
+        a.click();
+        btn.textContent = 'Download PNG';
+        btn.disabled = false;
+      }, 'image/png');
+    };
+    img.src = url;
+  } catch(e) {
+    // Fallback: download as SVG
+    const blob = new Blob([currentSVG], { type: 'image/svg+xml' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `mudflap-ad-${currentFormat}-${Date.now()}.svg`;
+    a.click();
+    btn.textContent = 'Download PNG';
+    btn.disabled = false;
+  }
+}
+
+// Enter to generate
+document.getElementById('message').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.metaKey) generate();
+});
 </script>
 </body>
 </html>
