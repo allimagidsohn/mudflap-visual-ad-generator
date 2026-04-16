@@ -4,207 +4,79 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mudflap Visual Ad Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #021E70;
-    --navy-dark: #000854;
-    --blue: #0432BA;
-    --blue-light: #4878FF;
-    --green: #00BA7F;
-    --green-dark: #00885D;
-    --orange: #FE9738;
-    --white: #FFFFFF;
-    --gray-100: #F5F8FC;
-    --gray-200: #EAF4FF;
-    --gray-500: #546E7A;
-    --gray-900: #02152A;
-    --font: 'Segoe UI', system-ui, sans-serif;
+    --navy: #021E70; --navy-dark: #000854; --blue: #0432BA;
+    --blue-light: #4878FF; --green: #00BA7F; --green-dark: #00885D;
+    --orange: #FE9738; --gray-100: #F5F8FC; --gray-500: #546E7A;
+    --gray-900: #02152A; --font: 'Open Sans', system-ui, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: var(--font); background: var(--gray-100); color: var(--gray-900); min-height: 100vh; }
 
-  header {
-    background: var(--navy-dark);
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  header { background: var(--navy-dark); padding: 14px 28px; display: flex; align-items: center; gap: 12px; }
   header h1 { color: white; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
 
-  .layout {
-    display: grid;
-    grid-template-columns: 370px 1fr;
-    height: calc(100vh - 52px);
-  }
+  .layout { display: grid; grid-template-columns: 370px 1fr; height: calc(100vh - 52px); }
 
-  .panel {
-    background: white;
-    overflow-y: auto;
-    border-right: 1px solid #e0e8f0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+  .panel { background: white; overflow-y: auto; border-right: 1px solid #e0e8f0; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
 
-  .section-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--gray-500);
-    margin-bottom: 8px;
-  }
+  .section-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gray-500); margin-bottom: 8px; }
 
-  textarea {
-    width: 100%;
-    border: 1.5px solid #dde6f0;
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-family: var(--font);
-    font-size: 13px;
-    resize: vertical;
-    min-height: 80px;
-    color: var(--gray-900);
-    outline: none;
-    line-height: 1.5;
-    transition: border-color 0.2s;
-  }
+  textarea { width: 100%; border: 1.5px solid #dde6f0; border-radius: 8px; padding: 10px 12px; font-family: var(--font); font-size: 13px; resize: vertical; min-height: 80px; color: var(--gray-900); outline: none; line-height: 1.5; transition: border-color 0.2s; }
   textarea:focus { border-color: var(--blue-light); }
   textarea::placeholder { color: #aab8cc; }
 
-  input[type="text"] {
-    width: 100%;
-    border: 1.5px solid #dde6f0;
-    border-radius: 8px;
-    padding: 9px 12px;
-    font-family: var(--font);
-    font-size: 13px;
-    color: var(--gray-900);
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  input[type="text"] { width: 100%; border: 1.5px solid #dde6f0; border-radius: 8px; padding: 9px 12px; font-family: var(--font); font-size: 13px; color: var(--gray-900); outline: none; transition: border-color 0.2s; }
   input[type="text"]:focus { border-color: var(--blue-light); }
   input[type="text"]::placeholder { color: #aab8cc; }
 
   .field-hint { font-size: 11px; color: #8ea0b5; margin-top: 5px; line-height: 1.4; }
+  .divider { border: none; border-top: 1px solid #edf2f7; }
 
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip {
-    border: 1.5px solid #dde6f0;
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 12px;
-    cursor: pointer;
-    background: white;
-    color: var(--gray-900);
-    font-family: var(--font);
-    user-select: none;
-    transition: all 0.15s;
-  }
+  .chip { border: 1.5px solid #dde6f0; border-radius: 20px; padding: 6px 12px; font-size: 12px; cursor: pointer; background: white; color: var(--gray-900); font-family: var(--font); user-select: none; transition: all 0.15s; }
   .chip:hover { border-color: var(--blue-light); color: var(--blue); }
   .chip.selected { background: var(--blue); border-color: var(--blue); color: white; font-weight: 600; }
-  .chip.selected-green { background: var(--green); border-color: var(--green); color: white; font-weight: 600; }
 
   .assets-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .asset-thumb {
-    border: 2px solid #dde6f0;
-    border-radius: 8px;
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    background: #f8fafc;
-    padding: 6px;
-    transition: all 0.15s;
-    position: relative;
-    overflow: hidden;
-    flex-direction: column;
-    gap: 2px;
-  }
+  .asset-thumb { border: 2px solid #dde6f0; border-radius: 8px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; background: #f8fafc; padding: 6px; transition: all 0.15s; flex-direction: column; gap: 2px; overflow: hidden; }
   .asset-thumb:hover { border-color: var(--blue-light); background: #eaf4ff; }
   .asset-thumb.selected { border-color: var(--green); background: #e8faf4; }
   .asset-thumb svg { width: 70%; height: 70%; }
   .asset-label { font-size: 9px; color: var(--gray-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
 
-  .stat-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    border: 1.5px solid #dde6f0; border-radius: 8px; padding: 5px 9px;
-    font-size: 11px; cursor: pointer; background: white;
-    transition: all 0.15s; font-family: var(--font);
-  }
+  .stats-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+  .stat-badge { display: inline-flex; align-items: center; gap: 4px; border: 1.5px solid #dde6f0; border-radius: 8px; padding: 5px 9px; font-size: 11px; cursor: pointer; background: white; transition: all 0.15s; font-family: var(--font); }
   .stat-badge:hover { border-color: var(--green); }
   .stat-badge.selected { border-color: var(--green); background: #e8faf4; color: var(--green-dark); font-weight: 600; }
   .stat-badge .val { font-weight: 700; font-size: 12px; }
-  .stats-grid { display: flex; flex-wrap: wrap; gap: 5px; }
 
-  .divider { border: none; border-top: 1px solid #edf2f7; }
-
-  .gen-btn {
-    background: var(--blue); color: white; border: none; border-radius: 8px;
-    padding: 13px 20px; font-size: 14px; font-weight: 700; cursor: pointer;
-    font-family: var(--font); transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    margin-top: auto;
-  }
+  .gen-btn { background: var(--blue); color: white; border: none; border-radius: 8px; padding: 13px 20px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto; }
   .gen-btn:hover:not(:disabled) { background: var(--navy); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(4,50,186,0.25); }
   .gen-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-  /* Preview */
   .preview { background: #edf0f5; display: flex; flex-direction: column; overflow: hidden; }
-
-  .preview-toolbar {
-    background: white; border-bottom: 1px solid #e0e8f0;
-    padding: 10px 20px; display: flex; align-items: center; gap: 8px;
-  }
-  .fmt-btn {
-    border: 1.5px solid #dde6f0; border-radius: 7px; padding: 6px 14px;
-    font-size: 12px; font-weight: 600; cursor: pointer; background: white;
-    font-family: var(--font); transition: all 0.15s; color: var(--gray-900);
-  }
+  .preview-toolbar { background: white; border-bottom: 1px solid #e0e8f0; padding: 10px 20px; display: flex; align-items: center; gap: 8px; }
+  .fmt-btn { border: 1.5px solid #dde6f0; border-radius: 7px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; background: white; font-family: var(--font); transition: all 0.15s; color: var(--gray-900); }
   .fmt-btn:hover { border-color: var(--blue-light); }
   .fmt-btn.active { background: var(--navy-dark); border-color: var(--navy-dark); color: white; }
   .fmt-dims { font-size: 11px; color: var(--gray-500); margin-left: auto; }
 
-  .preview-area {
-    flex: 1; overflow: auto; display: flex; align-items: center;
-    justify-content: center; padding: 28px;
-  }
-
-  .ad-wrapper {
-    border-radius: 10px;
-    box-shadow: 0 4px 32px rgba(0,0,0,0.14);
-    overflow: hidden;
-    position: relative;
-  }
-
-  .preview-footer {
-    background: white; border-top: 1px solid #e0e8f0;
-    padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;
-  }
+  .preview-area { flex: 1; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 28px; }
+  .ad-wrapper { border-radius: 10px; box-shadow: 0 4px 32px rgba(0,0,0,0.14); overflow: hidden; }
+  .preview-footer { background: white; border-top: 1px solid #e0e8f0; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
   .preview-info { font-size: 12px; color: var(--gray-500); }
-
-  .dl-btn {
-    background: var(--navy-dark); color: white; border: none; border-radius: 7px;
-    padding: 9px 18px; font-size: 12px; font-weight: 700; cursor: pointer;
-    font-family: var(--font); transition: all 0.15s;
-  }
+  .dl-btn { background: var(--navy-dark); color: white; border: none; border-radius: 7px; padding: 9px 18px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all 0.15s; }
   .dl-btn:hover { background: var(--blue); }
   .dl-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .empty-state {
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; gap: 14px; color: #8ea0b5; text-align: center;
-  }
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: #8ea0b5; text-align: center; }
   .empty-state p { font-size: 13px; line-height: 1.5; max-width: 200px; }
-
-  .loading-ring {
-    width: 44px; height: 44px; border: 4px solid #dde6f0;
-    border-top-color: var(--blue); border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
+  .loading-ring { width: 44px; height: 44px; border: 4px solid #dde6f0; border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
@@ -212,21 +84,20 @@
 
 <header>
   <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
-    <path d="M50 5 L95 50 L50 95 L5 50 Z" fill="#00BA7F"/>
-    <path d="M50 14 L86 50 L50 86 L14 50 Z" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
-    <polygon points="50,32 44,50 56,50" fill="white"/>
-    <rect x="47" y="50" width="6" height="10" fill="white"/>
+    <path d="M50 3 L97 50 L50 97 L3 50 Z" fill="#00BA7F"/>
+    <path d="M50 3 L97 50 L50 97 L3 50 Z" fill="none" stroke="white" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M50 14 L86 50 L50 86 L14 50 Z" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="3"/>
+    <path d="M55 28 L40 52 L50 52 L45 72 L62 46 L51 46 Z" fill="white"/>
   </svg>
   <h1>Mudflap · Visual Ad Generator</h1>
 </header>
 
 <div class="layout">
-
   <div class="panel">
 
     <div>
       <div class="section-label">What to communicate</div>
-      <textarea id="message" placeholder="e.g. Fleet managers can save up to $1/gal on diesel with no credit check and no hidden fees"></textarea>
+      <textarea id="message" placeholder="e.g. Fleet managers save up to $1/gal on diesel — no credit check, no hidden fees"></textarea>
       <div class="field-hint">The key claim or benefit you want this ad to land.</div>
     </div>
 
@@ -273,52 +144,140 @@
     <hr class="divider">
 
     <div>
-      <div class="section-label">Brand assets to include</div>
+      <div class="section-label">Brand asset (optional — leave blank for clean text ad)</div>
       <div class="assets-grid" id="assets-grid">
 
-        <div class="asset-thumb selected" data-asset="logo">
-          <svg viewBox="0 0 80 80" fill="none"><path d="M40 4 L76 40 L40 76 L4 40 Z" fill="#00BA7F"/><path d="M40 12 L68 40 L40 68 L12 40 Z" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/><polygon points="40,28 34,46 46,46" fill="white"/><rect x="37" y="46" width="6" height="9" fill="white"/></svg>
-          <div class="asset-label">Logo</div>
-        </div>
-
         <div class="asset-thumb" data-asset="truck-front">
-          <svg viewBox="0 0 80 60" fill="none"><rect x="10" y="18" width="60" height="32" rx="4" fill="#0432BA"/><rect x="14" y="22" width="24" height="18" rx="2" fill="#4878FF"/><rect x="14" y="22" width="24" height="9" rx="2" fill="#92BEFF" opacity="0.7"/><rect x="42" y="26" width="24" height="20" rx="2" fill="#021E70"/><circle cx="22" cy="52" r="5" fill="#02152A"/><circle cx="22" cy="52" r="3" fill="#546E7A"/><circle cx="58" cy="52" r="5" fill="#02152A"/><circle cx="58" cy="52" r="3" fill="#546E7A"/><rect x="6" y="30" width="7" height="5" rx="2" fill="#FFAE00"/><rect x="67" y="30" width="7" height="5" rx="2" fill="#FFAE00"/></svg>
+          <svg viewBox="0 0 80 65" fill="none">
+            <rect x="8" y="16" width="64" height="36" rx="5" fill="#0432BA"/>
+            <rect x="12" y="20" width="26" height="20" rx="3" fill="#4878FF"/>
+            <rect x="12" y="20" width="26" height="10" rx="3" fill="#92BEFF" opacity="0.8"/>
+            <rect x="42" y="22" width="26" height="22" rx="3" fill="#021E70"/>
+            <rect x="4" y="28" width="8" height="6" rx="2" fill="#FFCE66"/>
+            <rect x="68" y="28" width="8" height="6" rx="2" fill="#FFCE66"/>
+            <circle cx="20" cy="55" r="7" fill="#02152A"/><circle cx="20" cy="55" r="4" fill="#455A64"/>
+            <circle cx="60" cy="55" r="7" fill="#02152A"/><circle cx="60" cy="55" r="4" fill="#455A64"/>
+            <rect x="8" y="50" width="64" height="5" rx="2" fill="#021E70"/>
+          </svg>
           <div class="asset-label">Truck Front</div>
         </div>
 
         <div class="asset-thumb" data-asset="truck-side">
-          <svg viewBox="0 0 100 52" fill="none"><rect x="38" y="6" width="57" height="32" rx="3" fill="#0432BA"/><rect x="4" y="12" width="36" height="26" rx="3" fill="#021E70"/><rect x="6" y="14" width="18" height="15" rx="2" fill="#4878FF" opacity="0.8"/><rect x="6" y="14" width="18" height="7" rx="2" fill="#92BEFF" opacity="0.6"/><circle cx="20" cy="44" r="6" fill="#02152A"/><circle cx="20" cy="44" r="3.5" fill="#455A64"/><circle cx="55" cy="44" r="6" fill="#02152A"/><circle cx="55" cy="44" r="3.5" fill="#455A64"/><circle cx="75" cy="44" r="6" fill="#02152A"/><circle cx="75" cy="44" r="3.5" fill="#455A64"/><rect x="0" y="24" width="6" height="6" rx="1" fill="#FFAE00"/></svg>
+          <svg viewBox="0 0 110 60" fill="none">
+            <rect x="32" y="5" width="72" height="36" rx="4" fill="#0432BA"/>
+            <rect x="3" y="11" width="32" height="30" rx="4" fill="#021E70"/>
+            <rect x="5" y="13" width="20" height="16" rx="2" fill="#4878FF" opacity="0.85"/>
+            <rect x="5" y="13" width="20" height="8" rx="2" fill="#92BEFF" opacity="0.7"/>
+            <rect x="34" y="7" width="68" height="6" fill="#4878FF" opacity="0.25"/>
+            <circle cx="18" cy="47" r="8" fill="#02152A"/><circle cx="18" cy="47" r="4.5" fill="#455A64"/>
+            <circle cx="58" cy="47" r="8" fill="#02152A"/><circle cx="58" cy="47" r="4.5" fill="#455A64"/>
+            <circle cx="76" cy="47" r="8" fill="#02152A"/><circle cx="76" cy="47" r="4.5" fill="#455A64"/>
+            <rect x="0" y="22" width="5" height="8" rx="1.5" fill="#FFCE66"/>
+          </svg>
           <div class="asset-label">Truck Side</div>
         </div>
 
         <div class="asset-thumb" data-asset="fuel-pump">
-          <svg viewBox="0 0 60 80" fill="none"><rect x="8" y="8" width="34" height="58" rx="4" fill="#00BA7F"/><rect x="12" y="12" width="26" height="18" rx="2" fill="white" opacity="0.9"/><text x="25" y="24" text-anchor="middle" font-size="9" fill="#00885D" font-weight="bold" font-family="sans-serif">$3.95</text><rect x="16" y="34" width="18" height="22" rx="2" fill="#00885D"/><path d="M42 18 Q52 18 52 28 L52 46" stroke="#021E70" stroke-width="4" stroke-linecap="round" fill="none"/><circle cx="52" cy="48" r="4" fill="#021E70"/><rect x="4" y="66" width="42" height="6" rx="2" fill="#021E70"/></svg>
+          <svg viewBox="0 0 65 90" fill="none">
+            <rect x="8" y="6" width="38" height="66" rx="5" fill="#00BA7F"/>
+            <rect x="13" y="12" width="28" height="22" rx="3" fill="white" opacity="0.95"/>
+            <text x="27" y="26" text-anchor="middle" font-family="monospace" font-size="9" fill="#00885D" font-weight="bold">3.95</text>
+            <text x="27" y="32" text-anchor="middle" font-family="sans-serif" font-size="6" fill="#00885D">PRICE</text>
+            <rect x="13" y="38" width="28" height="26" rx="2" fill="#00885D"/>
+            <path d="M46 18 Q58 18 58 30 L58 52 L54 52" stroke="#021E70" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <rect x="46" y="50" width="12" height="6" rx="3" fill="#021E70"/>
+            <rect x="4" y="72" width="46" height="8" rx="3" fill="#00885D"/>
+            <path d="M27 42 L30 46 L27 50 L24 46 Z" fill="#00BA7F" stroke="white" stroke-width="1.5"/>
+            <path d="M27 43.5 L25.5 46 L27 48.5 L28.5 46 Z" fill="white" opacity="0.7"/>
+          </svg>
           <div class="asset-label">Fuel Pump</div>
         </div>
 
+        <div class="asset-thumb" data-asset="fuel-nozzle">
+          <svg viewBox="0 0 80 80" fill="none">
+            <path d="M15 65 Q20 50 30 42 L50 22 Q55 17 60 22 L65 27 Q70 32 65 37 L45 57 Q38 64 30 62 Z" fill="#00BA7F"/>
+            <path d="M48 20 L55 13 Q60 8 65 13 L70 18 Q75 23 70 28 L63 35" stroke="#00885D" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <rect x="10" y="60" width="20" height="10" rx="3" fill="#021E70"/>
+            <rect x="48" y="22" width="18" height="11" rx="2" fill="#5CD3AD" transform="rotate(-30 48 22)"/>
+            <text x="52" y="30" font-family="sans-serif" font-size="7" fill="#00885D" font-weight="bold" transform="rotate(-30 52 30)">$</text>
+            <rect x="62" y="14" width="15" height="10" rx="2" fill="#5CD3AD" transform="rotate(-15 62 14)"/>
+            <text x="66" y="22" font-family="sans-serif" font-size="7" fill="#00885D" font-weight="bold" transform="rotate(-15 66 22)">$</text>
+            <rect x="70" y="30" width="12" height="9" rx="2" fill="#B9ECDC" transform="rotate(10 70 30)"/>
+          </svg>
+          <div class="asset-label">Fuel + Savings</div>
+        </div>
+
         <div class="asset-thumb" data-asset="fuel-card">
-          <svg viewBox="0 0 90 58" fill="none"><rect x="2" y="6" width="86" height="52" rx="6" fill="#0432BA"/><path d="M2 6 Q45 28 88 6" fill="#4878FF" opacity="0.25"/><path d="M2 34 Q45 54 88 34" fill="#00BA7F" opacity="0.18"/><rect x="8" y="14" width="20" height="14" rx="2" fill="#FFAE00" opacity="0.9"/><text x="45" y="27" text-anchor="middle" font-size="8" fill="white" font-weight="bold" font-family="sans-serif">MUDFLAP</text><text x="45" y="40" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.65)" font-family="sans-serif">•••• •••• •••• 4567</text><text x="74" y="52" text-anchor="middle" font-size="8" fill="white" font-weight="600" font-family="sans-serif">VISA</text></svg>
+          <svg viewBox="0 0 95 62" fill="none">
+            <rect x="2" y="2" width="91" height="58" rx="7" fill="#0432BA"/>
+            <path d="M2 30 Q30 15 60 28 Q80 38 93 25 L93 60 L2 60 Z" fill="#021E70" opacity="0.5"/>
+            <path d="M2 40 Q25 28 55 38 Q75 48 93 36 L93 60 L2 60 Z" fill="#00BA7F" opacity="0.2"/>
+            <rect x="8" y="12" width="18" height="14" rx="2" fill="#FFAE00"/>
+            <line x1="8" y1="19" x2="26" y2="19" stroke="#CC8B00" stroke-width="1"/>
+            <line x1="17" y1="12" x2="17" y2="26" stroke="#CC8B00" stroke-width="1"/>
+            <path d="M36 10 L40 14 L36 18 L32 14 Z" fill="#00BA7F" stroke="white" stroke-width="1.5"/>
+            <path d="M36 11.5 L34.5 14 L36 16.5 L37.5 14 Z" fill="white"/>
+            <text x="44" y="17" font-family="sans-serif" font-size="7" fill="white" font-weight="800" letter-spacing="0.5">MUDFLAP</text>
+            <text x="8" y="36" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,0.65)" letter-spacing="2">•••• •••• •••• 4567</text>
+            <text x="82" y="14" font-family="sans-serif" font-size="8" fill="white" opacity="0.6">)))</text>
+            <text x="72" y="54" font-family="sans-serif" font-size="10" fill="white" font-weight="700" font-style="italic">VISA</text>
+          </svg>
           <div class="asset-label">Fuel Card</div>
         </div>
 
-        <div class="asset-thumb" data-asset="network">
-          <svg viewBox="0 0 70 60" fill="none"><rect width="70" height="60" fill="#EAF4FF" rx="4"/><circle cx="14" cy="18" r="3" fill="#0432BA"/><circle cx="34" cy="10" r="3" fill="#0432BA"/><circle cx="56" cy="16" r="3" fill="#0432BA"/><circle cx="22" cy="36" r="3" fill="#00BA7F"/><circle cx="46" cy="30" r="3" fill="#00BA7F"/><circle cx="60" cy="44" r="3" fill="#0432BA"/><circle cx="9" cy="48" r="3" fill="#0432BA"/><line x1="14" y1="18" x2="34" y2="10" stroke="#4878FF" stroke-width="1" opacity="0.5"/><line x1="34" y1="10" x2="56" y2="16" stroke="#4878FF" stroke-width="1" opacity="0.5"/><line x1="22" y1="36" x2="46" y2="30" stroke="#00BA7F" stroke-width="1" opacity="0.5"/><line x1="46" y1="30" x2="60" y2="44" stroke="#00BA7F" stroke-width="1" opacity="0.5"/></svg>
-          <div class="asset-label">Network</div>
+        <div class="asset-thumb" data-asset="us-map">
+          <svg viewBox="0 0 90 70" fill="none">
+            <path d="M10 20 Q15 15 25 18 Q35 12 50 15 Q65 12 75 18 Q82 22 80 35 Q78 48 70 52 Q60 58 50 55 Q35 58 25 52 Q15 48 12 38 Q8 30 10 20 Z" fill="#D9E8FF" opacity="0.8"/>
+            <circle cx="25" cy="28" r="4" fill="#0432BA"/><path d="M25 32 L25 36" stroke="#0432BA" stroke-width="2"/><path d="M25 24 L27 26 L27 30 L23 30 L23 26 Z" fill="white" opacity="0.9"/>
+            <circle cx="40" cy="22" r="4" fill="#0432BA"/><path d="M40 26 L40 30" stroke="#0432BA" stroke-width="2"/>
+            <circle cx="55" cy="25" r="4" fill="#00BA7F"/><path d="M55 29 L55 33" stroke="#00BA7F" stroke-width="2"/>
+            <circle cx="65" cy="32" r="4" fill="#0432BA"/><path d="M65 36 L65 40" stroke="#0432BA" stroke-width="2"/>
+            <circle cx="35" cy="38" r="4" fill="#00BA7F"/><path d="M35 42 L35 46" stroke="#00BA7F" stroke-width="2"/>
+            <circle cx="50" cy="42" r="4" fill="#0432BA"/><path d="M50 46 L50 50" stroke="#0432BA" stroke-width="2"/>
+          </svg>
+          <div class="asset-label">Network Map</div>
         </div>
 
-        <div class="asset-thumb" data-asset="savings-badge">
-          <svg viewBox="0 0 70 50" fill="none"><rect x="2" y="2" width="66" height="46" rx="8" fill="#00BA7F"/><text x="35" y="22" text-anchor="middle" font-size="15" fill="white" font-weight="bold" font-family="sans-serif">$1/gal</text><text x="35" y="38" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.85)" font-family="sans-serif">savings off</text></svg>
-          <div class="asset-label">Stat Badge</div>
-        </div>
-
-        <div class="asset-thumb" data-asset="diamond-shape">
-          <svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" fill="#021E70" rx="4"/><path d="M30 6 L54 30 L30 54 L6 30 Z" fill="none" stroke="#4878FF" stroke-width="1.5" opacity="0.5"/><path d="M30 14 L46 30 L30 46 L14 30 Z" fill="none" stroke="#00BA7F" stroke-width="1" opacity="0.4"/><circle cx="30" cy="30" r="4" fill="#00BA7F" opacity="0.6"/></svg>
-          <div class="asset-label">BG Pattern</div>
-        </div>
-
-        <div class="asset-thumb" data-asset="piggy-bank">
-          <svg viewBox="0 0 70 65" fill="none"><ellipse cx="35" cy="40" rx="24" ry="18" fill="#5CD3AD"/><circle cx="48" cy="30" r="8" fill="#5CD3AD"/><circle cx="51" cy="28" r="2.5" fill="white"/><ellipse cx="50" cy="37" rx="4" ry="2.5" fill="#00885D"/><path d="M20 37 Q15 44 18 50 L14 56 L22 54" stroke="#00885D" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M26 54 L32 59 L38 54 M40 54 L46 59 L52 54" stroke="#00885D" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="30" y="18" width="10" height="15" rx="2" fill="#FFAE00"/><path d="M35 14 L35 18 M32 15.5 L35 18 L38 15.5" stroke="#FFAE00" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="asset-thumb" data-asset="money-stack">
+          <svg viewBox="0 0 80 70" fill="none">
+            <rect x="5" y="22" width="55" height="28" rx="4" fill="#5CD3AD"/>
+            <rect x="5" y="22" width="55" height="28" rx="4" fill="none" stroke="#00885D" stroke-width="1.5"/>
+            <rect x="5" y="14" width="55" height="12" rx="4" fill="#00BA7F"/>
+            <rect x="5" y="6" width="55" height="12" rx="4" fill="#00885D"/>
+            <text x="32" y="40" text-anchor="middle" font-family="sans-serif" font-size="18" fill="white" font-weight="800">$</text>
+            <circle cx="65" cy="20" r="12" fill="#FFAE00"/><circle cx="65" cy="20" r="8" fill="#FFCE66"/>
+            <text x="65" y="24" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#CC8B00" font-weight="800">$</text>
+            <circle cx="70" cy="36" r="8" fill="#FFAE00"/><circle cx="70" cy="36" r="5.5" fill="#FFCE66"/>
+            <circle cx="58" cy="40" r="7" fill="#FFAE00"/><circle cx="58" cy="40" r="4.5" fill="#FFCE66"/>
+          </svg>
           <div class="asset-label">Savings</div>
+        </div>
+
+        <div class="asset-thumb" data-asset="truck-stop-sign">
+          <svg viewBox="0 0 80 80" fill="none">
+            <circle cx="40" cy="8" r="8" fill="#00BA7F"/>
+            <path d="M40 4.5 L43 8 L40 11.5 L37 8 Z" fill="none" stroke="white" stroke-width="1.5"/>
+            <path d="M40 5.8 L38.8 8 L40 10.2 L41.2 8 Z" fill="white"/>
+            <rect x="5" y="16" width="70" height="26" rx="4" fill="#0432BA"/>
+            <text x="40" y="28" text-anchor="middle" font-family="sans-serif" font-size="8" fill="white" font-weight="800" letter-spacing="1">TRUCK STOP</text>
+            <rect x="5" y="44" width="70" height="24" rx="4" fill="#02152A"/>
+            <text x="25" y="60" text-anchor="middle" font-family="monospace" font-size="12" fill="#00BA7F" font-weight="bold">3.55</text>
+            <text x="58" y="60" text-anchor="middle" font-family="monospace" font-size="12" fill="#00BA7F" font-weight="bold">4.15</text>
+            <text x="25" y="66" text-anchor="middle" font-family="sans-serif" font-size="5" fill="#546E7A">REGULAR</text>
+            <text x="58" y="66" text-anchor="middle" font-family="sans-serif" font-size="5" fill="#00BA7F">DIESEL</text>
+            <rect x="37" y="68" width="6" height="14" fill="#455A64"/>
+          </svg>
+          <div class="asset-label">Truck Stop</div>
+        </div>
+
+        <div class="asset-thumb" data-asset="diamond-bg">
+          <svg viewBox="0 0 60 60" fill="none">
+            <rect width="60" height="60" fill="#021E70" rx="4"/>
+            <path d="M30 4 L56 30 L30 56 L4 30 Z" fill="none" stroke="#4878FF" stroke-width="2" opacity="0.5"/>
+            <path d="M30 12 L48 30 L30 48 L12 30 Z" fill="rgba(0,186,127,0.15)" stroke="#00BA7F" stroke-width="1.5" opacity="0.6"/>
+            <path d="M32 18 L26 30 L31 30 L28 42 L36 28 L30 28 Z" fill="#00BA7F" opacity="0.7"/>
+          </svg>
+          <div class="asset-label">BG Pattern</div>
         </div>
 
       </div>
@@ -345,7 +304,7 @@
     <div>
       <div class="section-label">Background / visual direction</div>
       <input type="text" id="bg-prompt" placeholder="e.g. open highway at dusk, aerial fuel stop, fleet on I-80…">
-      <div class="field-hint">Optional scene or mood — Claude will use this to style the background.</div>
+      <div class="field-hint">Optional — describes mood for the background.</div>
     </div>
 
     <button class="gen-btn" id="gen-btn" onclick="generate()">
@@ -355,71 +314,62 @@
 
   </div>
 
-  <!-- Preview -->
   <div class="preview">
-
     <div class="preview-toolbar">
       <button class="fmt-btn active" onclick="setFormat('square', this)">Square 1:1</button>
       <button class="fmt-btn" onclick="setFormat('story', this)">Story 9:16</button>
       <button class="fmt-btn" onclick="setFormat('landscape', this)">Landscape 1.91:1</button>
       <span class="fmt-dims" id="fmt-dims">1080 × 1080</span>
     </div>
-
     <div class="preview-area" id="preview-area">
-      <div class="empty-state" id="empty-state">
+      <div class="empty-state">
         <svg width="56" height="56" viewBox="0 0 64 64" fill="none"><path d="M32 4 L60 32 L32 60 L4 32 Z" stroke="#ccd5e0" stroke-width="3" fill="none"/><circle cx="32" cy="32" r="5" fill="#ccd5e0"/></svg>
         <p>Fill in what to communicate, pick your CTA, and hit Generate</p>
       </div>
     </div>
-
     <div class="preview-footer">
       <span class="preview-info" id="preview-info">Ready</span>
       <button class="dl-btn" id="dl-btn" onclick="downloadPNG()" disabled>Download PNG</button>
     </div>
-
   </div>
 </div>
 
 <script>
-// ─── State ───
-let currentSVG = null;
-let selectedCTA = null;
-let selectedFunnel = 'Awareness';
-let selectedLayout = 'Bold';
-let selectedAssets = new Set(['logo']);
-let selectedStat = null;
-let currentFormat = 'square';
+const FONT = "'Open Sans', sans-serif";
+let currentSVG = null, selectedCTA = null, selectedFunnel = 'Awareness',
+    selectedLayout = 'Bold', selectedAssets = new Set(), selectedStat = null, currentFormat = 'square';
 
 const FORMATS = {
   square:    { w: 1080, h: 1080, label: '1080 × 1080', vw: 420, vh: 420 },
-  story:     { w: 1080, h: 1920, label: '1080 × 1920', vw: 252, vh: 448 },
+  story:     { w: 1080, h: 1920, label: '1080 × 1920', vw: 240, vh: 426 },
   landscape: { w: 1920, h: 1080, label: '1920 × 1080', vw: 560, vh: 315 },
 };
 
-// Chip handlers
 document.getElementById('cta-chips').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if (!c) return;
   document.querySelectorAll('#cta-chips .chip').forEach(x => x.classList.remove('selected'));
-  c.classList.add('selected');
-  selectedCTA = c.dataset.value;
+  c.classList.add('selected'); selectedCTA = c.dataset.value;
 });
 document.getElementById('funnel-chips').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if (!c) return;
   document.querySelectorAll('#funnel-chips .chip').forEach(x => x.classList.remove('selected'));
-  c.classList.add('selected');
-  selectedFunnel = c.dataset.value;
+  c.classList.add('selected'); selectedFunnel = c.dataset.value;
 });
 document.getElementById('layout-chips').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if (!c) return;
   document.querySelectorAll('#layout-chips .chip').forEach(x => x.classList.remove('selected'));
-  c.classList.add('selected');
-  selectedLayout = c.dataset.value;
+  c.classList.add('selected'); selectedLayout = c.dataset.value;
 });
 document.getElementById('assets-grid').addEventListener('click', e => {
   const t = e.target.closest('.asset-thumb'); if (!t) return;
   const k = t.dataset.asset;
-  if (selectedAssets.has(k)) { selectedAssets.delete(k); t.classList.remove('selected'); }
-  else { selectedAssets.add(k); t.classList.add('selected'); }
+  // Only one asset at a time
+  selectedAssets.forEach(a => {
+    const el = document.querySelector(`[data-asset="${a}"]`);
+    if (el) el.classList.remove('selected');
+  });
+  selectedAssets.clear();
+  if (k) { selectedAssets.add(k); t.classList.add('selected'); }
 });
 document.getElementById('stats-grid').addEventListener('click', e => {
   const b = e.target.closest('.stat-badge'); if (!b) return;
@@ -435,323 +385,319 @@ function setFormat(fmt, btn) {
   if (currentSVG) renderSVG(currentSVG);
 }
 
-// ─── SVG renderer from spec ───
 function buildSVG(spec, fmt) {
   const { w, h } = fmt;
-  const isStory = h > w;
-  const isLandscape = w > h;
-
-  // Color scheme
+  const isStory = h > w, isLandscape = w > h;
   const schemes = {
-    'navy-green':    { bg1: '#021E70', bg2: '#000854', accent: '#00BA7F', text: '#FFFFFF', sub: 'rgba(255,255,255,0.82)', badge: '#00BA7F' },
-    'blue-white':    { bg1: '#0432BA', bg2: '#021E70', accent: '#00BA7F', text: '#FFFFFF', sub: 'rgba(255,255,255,0.82)', badge: '#FE9738' },
-    'dark-gradient': { bg1: '#02152A', bg2: '#021E70', accent: '#00BA7F', text: '#FFFFFF', sub: 'rgba(255,255,255,0.75)', badge: '#00BA7F' },
-    'green-accent':  { bg1: '#021E70', bg2: '#0432BA', accent: '#00BA7F', text: '#FFFFFF', sub: 'rgba(255,255,255,0.82)', badge: '#FE9738' },
+    'navy-green':    { bg1:'#021E70', bg2:'#000854', accent:'#00BA7F', sub:'rgba(255,255,255,0.80)', badge:'#00BA7F', badgeTxt:'#021E70' },
+    'blue-white':    { bg1:'#0432BA', bg2:'#021E70', accent:'#00BA7F', sub:'rgba(255,255,255,0.80)', badge:'#FE9738', badgeTxt:'#021E70' },
+    'dark-gradient': { bg1:'#02152A', bg2:'#021E70', accent:'#00BA7F', sub:'rgba(255,255,255,0.75)', badge:'#00BA7F', badgeTxt:'#021E70' },
+    'green-accent':  { bg1:'#021E70', bg2:'#0432BA', accent:'#00BA7F', sub:'rgba(255,255,255,0.80)', badge:'#FE9738', badgeTxt:'#021E70' },
   };
   const s = schemes[spec.colorScheme] || schemes['navy-green'];
 
-  // Scale helpers
-  const fs = (base) => Math.round(base * (w / 1080));
-  const px = (v) => Math.round(v * (w / 1080));
-  const py = (v) => Math.round(v * (h / 1080));
+  // Scale helpers — all values designed at 1080×1080 base
+  const sc = w / 1080;
+  const f  = v => Math.round(v * sc);
+  const p  = v => Math.round(v * sc);
+  const q  = v => Math.round(v * (h / 1080));
+  const PAD = p(80);
 
-  const pad = px(88);
-  const midX = w / 2;
-
-  // Build elements
   let els = [];
 
-  // ── Background ──
+  // Background
   els.push(`<defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="bg" x1="0" y1="0" x2="0.3" y2="1">
       <stop offset="0%" stop-color="${s.bg1}"/>
       <stop offset="100%" stop-color="${s.bg2}"/>
     </linearGradient>
     <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="0%" stop-color="rgba(255,255,255,0.07)"/>
       <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
     </linearGradient>
-  </defs>`);
+  </defs>
+  <rect width="${w}" height="${h}" fill="url(#bg)"/>
+  <rect width="${w}" height="${q(260)}" fill="url(#shine)"/>`);
 
-  els.push(`<rect width="${w}" height="${h}" fill="url(#bg)"/>`);
+  // Diagonal stripe
+  const diagX = isLandscape ? w * 0.56 : w * 0.60;
+  els.push(`<polygon points="${diagX},0 ${w},0 ${w},${h} ${diagX - p(200)},${h}" fill="rgba(255,255,255,0.035)"/>`);
 
-  // Diagonal accent shape
-  if (selectedLayout !== 'Minimal') {
-    const diagX = isLandscape ? w * 0.55 : w * 0.62;
-    els.push(`<polygon points="${diagX},0 ${w},0 ${w},${h} ${diagX - px(180)},${h}" fill="rgba(255,255,255,0.04)"/>`);
-  }
+  // Large background diamond (always — brand element)
+  const dmSz = isStory ? p(600) : p(500);
+  const dmX  = isLandscape ? w * 0.76 : w * 0.80;
+  const dmY  = isStory ? h * 0.32 : h * 0.44;
+  els.push(`<polygon points="${dmX},${dmY-dmSz/2} ${dmX+dmSz/2},${dmY} ${dmX},${dmY+dmSz/2} ${dmX-dmSz/2},${dmY}"
+    fill="rgba(72,120,255,0.09)" stroke="rgba(72,120,255,0.16)" stroke-width="${p(3)}"/>`);
 
-  // Large diamond bg element
-  if (selectedAssets.has('diamond-shape')) {
-    const ds = px(560);
-    const dx = isLandscape ? w * 0.78 : w * 0.82;
-    const dy = isStory ? h * 0.35 : h * 0.5;
-    els.push(`<polygon points="${dx},${dy - ds/2} ${dx + ds/2},${dy} ${dx},${dy + ds/2} ${dx - ds/2},${dy}" fill="rgba(72,120,255,0.12)" stroke="rgba(72,120,255,0.2)" stroke-width="${px(2)}"/>`);
-  }
-
-  // ── Logo (top left) — always shown ──
-  const lsz = px(60);
-  const lx = pad;
-  const ly = py(56);
-  els.push(`<g transform="translate(${lx},${ly})">
-    <polygon points="${lsz/2},0 ${lsz},${lsz/2} ${lsz/2},${lsz} 0,${lsz/2}" fill="#00BA7F"/>
-    <polygon points="${lsz/2},0 ${lsz},${lsz/2} ${lsz/2},${lsz} 0,${lsz/2}" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="${px(2)}"/>
-    <polygon points="${lsz/2},${lsz*0.28} ${lsz*0.38},${lsz*0.58} ${lsz*0.62},${lsz*0.58}" fill="white"/>
-    <rect x="${lsz*0.44}" y="${lsz*0.58}" width="${lsz*0.12}" height="${lsz*0.18}" fill="white"/>
+  // Logo — ALWAYS top left
+  const LSZ = p(52);
+  const LX  = PAD;
+  const LY  = q(52);
+  els.push(`<g transform="translate(${LX},${LY})">
+    <polygon points="${LSZ/2},0 ${LSZ},${LSZ/2} ${LSZ/2},${LSZ} 0,${LSZ/2}" fill="#00BA7F"/>
+    <polygon points="${LSZ/2},0 ${LSZ},${LSZ/2} ${LSZ/2},${LSZ} 0,${LSZ/2}" fill="none" stroke="white" stroke-width="${p(3.5)}" stroke-linejoin="round"/>
+    <polygon points="${LSZ/2},${LSZ*0.15} ${LSZ*0.86},${LSZ/2} ${LSZ/2},${LSZ*0.85} ${LSZ*0.14},${LSZ/2}" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="${p(1.5)}"/>
+    <path d="M${LSZ*0.55},${LSZ*0.24} L${LSZ*0.38},${LSZ*0.52} L${LSZ*0.50},${LSZ*0.52} L${LSZ*0.45},${LSZ*0.76} L${LSZ*0.64},${LSZ*0.46} L${LSZ*0.51},${LSZ*0.46} Z" fill="white"/>
   </g>
-  <text x="${lx + lsz + px(14)}" y="${ly + lsz * 0.68}" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" font-weight="700" fill="white" letter-spacing="1">MUDFLAP</text>`);
+  <text x="${LX+LSZ+p(12)}" y="${LY+LSZ*0.70}" font-family="${FONT}" font-size="${f(23)}" font-weight="800" fill="white" letter-spacing="${p(1.5)}">MUDFLAP</text>`);
 
-  // ── Badge (top right) ──
+  // Badge top right
   if (spec.badgeText) {
-    const btw = px(160); const bth = py(52);
-    const btx = w - pad - btw; const bty = py(48);
-    els.push(`<rect x="${btx}" y="${bty}" width="${btw}" height="${bth}" rx="${px(6)}" fill="${s.badge}"/>
-    <text x="${btx + btw/2}" y="${bty + bth * 0.65}" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="${fs(20)}" font-weight="800" fill="${s.bg2}">${spec.badgeText}</text>`);
+    const BW=p(170), BH=q(50), BX=w-PAD-p(170), BY=q(48);
+    els.push(`<rect x="${BX}" y="${BY}" width="${BW}" height="${BH}" rx="${p(7)}" fill="${s.badge}"/>
+    <text x="${BX+BW/2}" y="${BY+BH*0.66}" text-anchor="middle" font-family="${FONT}" font-size="${f(19)}" font-weight="800" fill="${s.badgeTxt}">${spec.badgeText}</text>`);
   }
 
-  // ── Main content area ──
-  // Always start content below logo zone
-  const logoBottomY = py(56) + px(60) + py(40); // logo top + logo size + gap
-  const contentY = isStory ? Math.max(py(280), logoBottomY) : Math.max(py(220), logoBottomY);
-  const contentW = isLandscape ? w * 0.5 : w - pad * 2;
+  // Content zone — always below logo
+  const LOGO_BTM = LY + LSZ + q(52);
+  const CTOP = isStory ? Math.max(q(310), LOGO_BTM) : Math.max(q(210), LOGO_BTM);
+  const CW   = isLandscape ? w * 0.47 : w - PAD * 2;
 
-  // Stat-forward layout
+  const HL_SZ  = f(selectedLayout==='Minimal'?58 : selectedLayout==='Stat-forward'?54 : 72);
+  const SUB_SZ = f(30);
+  const STAT_SZ= f(92);
+  const HL_LH  = Math.round(HL_SZ * 1.22);
+  const SUB_LH = Math.round(SUB_SZ * 1.4);
+
+  function lines(txt, maxW, fs) {
+    if (!txt) return [];
+    const cpl = Math.floor(maxW / (fs * 0.52));
+    const words = txt.split(' '), out = []; let ln = '';
+    for (const w of words) { if ((ln+w).length > cpl && ln) { out.push(ln.trim()); ln=''; } ln+=w+' '; }
+    if (ln.trim()) out.push(ln.trim());
+    return out;
+  }
+  function renderLines(lns, x, y, fs, fill, weight, lh) {
+    return lns.map((l,i)=>`<text x="${x}" y="${y+i*lh}" font-family="${FONT}" font-size="${fs}" font-weight="${weight}" fill="${fill}">${l}</text>`).join('\n');
+  }
+
   if (selectedLayout === 'Stat-forward' && spec.stat) {
-    const statY = contentY + py(60);
-    els.push(`<text x="${pad}" y="${statY}" font-family="'Segoe UI',sans-serif" font-size="${fs(160)}" font-weight="900" fill="${s.accent}" opacity="0.95">${spec.stat}</text>`);
-    if (spec.statLabel) {
-      els.push(`<text x="${pad}" y="${statY + py(64)}" font-family="'Segoe UI',sans-serif" font-size="${fs(32)}" fill="${s.sub}">${spec.statLabel}</text>`);
-    }
-    const hlY = statY + py(160);
-    els.push(wrapText(spec.headline, pad, hlY, contentW, fs(52), 'white', '800', w));
+    const stY = CTOP + q(40);
+    els.push(`<text x="${PAD}" y="${stY}" font-family="${FONT}" font-size="${f(148)}" font-weight="800" fill="${s.accent}">${spec.stat}</text>`);
+    if (spec.statLabel) els.push(`<text x="${PAD}" y="${stY+q(62)}" font-family="${FONT}" font-size="${f(28)}" font-weight="400" fill="${s.sub}">${spec.statLabel}</text>`);
+    const hlY2 = stY + q(160);
+    const hlLns = lines(spec.headline, CW, HL_SZ);
+    els.push(renderLines(hlLns, PAD, hlY2, HL_SZ, 'white', '800', HL_LH));
     if (spec.subheadline) {
-      els.push(wrapText(spec.subheadline, pad, hlY + py(120), contentW, fs(30), s.sub, '400', w));
+      const subLns = lines(spec.subheadline, CW, SUB_SZ);
+      els.push(renderLines(subLns, PAD, hlY2 + hlLns.length*HL_LH + q(36), SUB_SZ, s.sub, '400', SUB_LH));
     }
   } else {
-    // Bold / Clean / Minimal
-    const hlY = contentY;
-    const hlSize = selectedLayout === 'Minimal' ? 60 : selectedLayout === 'Bold' ? 76 : 68;
-    els.push(wrapText(spec.headline, pad, hlY, contentW, fs(hlSize), 'white', '800', w));
-    const subY = hlY + py(selectedLayout === 'Bold' ? 220 : 190);
+    const hlLns = lines(spec.headline, CW, HL_SZ);
+    const hlBlockH = hlLns.length * HL_LH;
+    els.push(renderLines(hlLns, PAD, CTOP, HL_SZ, 'white', '800', HL_LH));
+
+    const subY = CTOP + hlBlockH + q(44);
+    let afterSub = subY;
     if (spec.subheadline) {
-      els.push(wrapText(spec.subheadline, pad, subY, contentW, fs(32), s.sub, '400', w));
+      const subLns = lines(spec.subheadline, CW, SUB_SZ);
+      els.push(renderLines(subLns, PAD, subY, SUB_SZ, s.sub, '400', SUB_LH));
+      afterSub = subY + subLns.length * SUB_LH + q(36);
     }
-    // Stat below sub — count subheadline lines to avoid overlap
     if (spec.stat && selectedLayout !== 'Minimal') {
-      const subLines = spec.subheadline ? Math.ceil(spec.subheadline.length / Math.floor(contentW / (fs(32) * 0.55))) : 0;
-      const stY = subY + py(60) + (subLines * Math.round(fs(32) * 1.25));
-      els.push(`<text x="${pad}" y="${stY}" font-family="'Segoe UI',sans-serif" font-size="${fs(88)}" font-weight="900" fill="${s.accent}">${spec.stat}</text>`);
-      if (spec.statLabel) {
-        els.push(`<text x="${pad}" y="${stY + py(56)}" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" fill="${s.sub}">${spec.statLabel}</text>`);
-      }
+      const stBase = afterSub + STAT_SZ * 0.85;
+      els.push(`<text x="${PAD}" y="${stBase}" font-family="${FONT}" font-size="${STAT_SZ}" font-weight="800" fill="${s.accent}">${spec.stat}</text>`);
+      if (spec.statLabel) els.push(`<text x="${PAD}" y="${stBase+q(48)}" font-family="${FONT}" font-size="${f(24)}" font-weight="400" fill="${s.sub}">${spec.statLabel}</text>`);
     }
   }
 
-  // ── Asset illustrations — right side, smaller, doesn't crowd text ──
-  const assetX = isLandscape ? w * 0.60 : w - px(280);
-  const assetY = isStory ? h * 0.42 : h * 0.35;
-  const assetSz = isLandscape ? px(320) : px(260);
+  // Asset illustration
+  const AX  = isLandscape ? w*0.58 : w-p(300);
+  const AY  = isStory ? h*0.40 : h*0.30;
+  const ASZ = isLandscape ? p(340) : p(270);
 
-  if (selectedAssets.has('truck-side')) {
-    els.push(drawTruckSide(assetX, assetY, assetSz, assetSz * 0.52));
-  } else if (selectedAssets.has('truck-front')) {
-    els.push(drawTruckFront(assetX + assetSz*0.1, assetY, assetSz * 0.8, assetSz * 0.6));
-  } else if (selectedAssets.has('fuel-pump')) {
-    els.push(drawFuelPump(assetX + assetSz*0.2, assetY, assetSz * 0.5, assetSz * 0.7));
-  } else if (selectedAssets.has('fuel-card')) {
-    els.push(drawFuelCard(assetX, assetY + assetSz*0.15, assetSz, assetSz * 0.62));
-  } else if (selectedAssets.has('piggy-bank')) {
-    els.push(drawPiggy(assetX + assetSz*0.1, assetY, assetSz * 0.8, assetSz * 0.8));
-  } else if (selectedAssets.has('network')) {
-    els.push(drawNetwork(assetX, assetY, assetSz, assetSz * 0.75));
-  } else if (selectedAssets.has('savings-badge')) {
-    els.push(drawStatBadge(assetX + assetSz*0.1, assetY + assetSz*0.1, assetSz * 0.8, assetSz * 0.55, spec.stat || '$1/gal', 'savings off', s.accent, s.bg2));
-  }
+  const assetOrder = ['truck-side','truck-front','fuel-pump','fuel-nozzle','fuel-card','us-map','money-stack','truck-stop-sign','diamond-bg'];
+  const chosen = assetOrder.find(a => selectedAssets.has(a));
 
-  // ── Proof line ──
+  if (chosen === 'truck-side')        els.push(drawTruckSide(AX, AY, ASZ));
+  else if (chosen === 'truck-front')  els.push(drawTruckFront(AX+ASZ*0.05, AY+ASZ*0.05, ASZ*0.9));
+  else if (chosen === 'fuel-pump')    els.push(drawFuelPump(AX+ASZ*0.15, AY, ASZ*0.65));
+  else if (chosen === 'fuel-nozzle')  els.push(drawFuelNozzle(AX, AY+ASZ*0.1, ASZ*0.9));
+  else if (chosen === 'fuel-card')    els.push(drawFuelCard(AX, AY+ASZ*0.2, ASZ, ASZ*0.63));
+  else if (chosen === 'us-map')       els.push(drawUSMap(AX, AY+ASZ*0.1, ASZ));
+  else if (chosen === 'money-stack')  els.push(drawMoneyStack(AX+ASZ*0.1, AY+ASZ*0.1, ASZ*0.8));
+  else if (chosen === 'truck-stop-sign') els.push(drawTruckStopSign(AX+ASZ*0.1, AY, ASZ*0.8));
+
+  // Proof line
   if (spec.proof && selectedLayout !== 'Minimal') {
-    const proofY = isStory ? h * 0.84 : h * 0.80;
-    els.push(`<text x="${pad}" y="${proofY}" font-family="'Segoe UI',sans-serif" font-size="${fs(22)}" fill="rgba(255,255,255,0.6)" font-style="italic">${spec.proof}</text>`);
+    const PY = isStory ? h-q(200) : h-q(168);
+    els.push(`<text x="${PAD}" y="${PY}" font-family="${FONT}" font-size="${f(21)}" font-weight="400" fill="rgba(255,255,255,0.55)" font-style="italic">${spec.proof}</text>`);
   }
 
-  // ── CTA Button ──
+  // CTA button
   if (selectedCTA && selectedCTA !== 'No CTA') {
-    const ctaLabel = spec.cta || selectedCTA;
-    const btnW = px(380); const btnH = py(80);
-    const btnX = pad; const btnY = h - py(110) - btnH;
-    els.push(`<rect x="${btnX}" y="${btnY}" width="${btnW}" height="${btnH}" rx="${px(10)}" fill="${s.accent}"/>
-    <text x="${btnX + btnW/2}" y="${btnY + btnH * 0.64}" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="${fs(26)}" font-weight="700" fill="#021E70">${ctaLabel}</text>`);
+    const lbl  = spec.cta || selectedCTA;
+    const BtnW = p(isLandscape ? 360 : 430);
+    const BtnH = q(78);
+    const BtnX = PAD;
+    const BtnY = h - q(96) - BtnH;
+    els.push(`<rect x="${BtnX}" y="${BtnY}" width="${BtnW}" height="${BtnH}" rx="${p(10)}" fill="${s.accent}"/>
+    <text x="${BtnX+BtnW/2}" y="${BtnY+BtnH*0.635}" text-anchor="middle" font-family="${FONT}" font-size="${f(25)}" font-weight="700" fill="#021E70">${lbl}</text>`);
   }
-
-  // Shine overlay
-  els.push(`<rect width="${w}" height="${py(200)}" fill="url(#shine)"/>`);
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${els.join('\n')}</svg>`;
 }
 
-// Text wrapper
-function wrapText(text, x, y, maxW, fontSize, fill, weight, canvasW) {
-  if (!text) return '';
-  const charsPerLine = Math.floor(maxW / (fontSize * 0.55));
-  const words = text.split(' ');
-  const lines = [];
-  let line = '';
-  for (const word of words) {
-    if ((line + word).length > charsPerLine && line) { lines.push(line.trim()); line = ''; }
-    line += word + ' ';
-  }
-  if (line.trim()) lines.push(line.trim());
-  return lines.map((l, i) =>
-    `<text x="${x}" y="${y + i * Math.round(fontSize * 1.25)}" font-family="'Segoe UI',sans-serif" font-size="${fontSize}" font-weight="${weight}" fill="${fill}">${l}</text>`
-  ).join('\n');
-}
-
 // Asset draw functions
-function drawTruckSide(x, y, w, h) {
-  const s = w/100;
-  return `<g transform="translate(${x},${y})">
-    <rect x="${38*s}" y="${6*s}" width="${57*s}" height="${32*s}" rx="${3*s}" fill="#0432BA"/>
-    <rect x="${4*s}" y="${12*s}" width="${36*s}" height="${26*s}" rx="${3*s}" fill="#021E70"/>
-    <rect x="${6*s}" y="${14*s}" width="${18*s}" height="${15*s}" rx="${2*s}" fill="#4878FF" opacity="0.8"/>
-    <rect x="${6*s}" y="${14*s}" width="${18*s}" height="${7*s}" rx="${2*s}" fill="#92BEFF" opacity="0.6"/>
-    <rect x="${40*s}" y="${8*s}" width="${52*s}" height="${5*s}" fill="#4878FF" opacity="0.3"/>
-    <circle cx="${20*s}" cy="${44*s}" r="${6*s}" fill="#02152A"/>
-    <circle cx="${20*s}" cy="${44*s}" r="${3.5*s}" fill="#455A64"/>
-    <circle cx="${55*s}" cy="${44*s}" r="${6*s}" fill="#02152A"/>
-    <circle cx="${55*s}" cy="${44*s}" r="${3.5*s}" fill="#455A64"/>
-    <circle cx="${75*s}" cy="${44*s}" r="${6*s}" fill="#02152A"/>
-    <circle cx="${75*s}" cy="${44*s}" r="${3.5*s}" fill="#455A64"/>
-    <rect x="0" y="${24*s}" width="${6*s}" height="${6*s}" rx="${1*s}" fill="#FFAE00"/>
+function drawTruckSide(x, y, sz) {
+  const s = sz/110;
+  return `<g transform="translate(${Math.round(x)},${Math.round(y)})">
+    <rect x="${32*s}" y="${5*s}" width="${72*s}" height="${36*s}" rx="${4*s}" fill="#0432BA"/>
+    <rect x="${3*s}" y="${11*s}" width="${32*s}" height="${30*s}" rx="${4*s}" fill="#021E70"/>
+    <rect x="${5*s}" y="${13*s}" width="${20*s}" height="${16*s}" rx="${2*s}" fill="#4878FF" opacity="0.85"/>
+    <rect x="${5*s}" y="${13*s}" width="${20*s}" height="${8*s}" rx="${2*s}" fill="#92BEFF" opacity="0.7"/>
+    <rect x="${34*s}" y="${7*s}" width="${68*s}" height="${6*s}" fill="#4878FF" opacity="0.25"/>
+    <circle cx="${18*s}" cy="${47*s}" r="${8*s}" fill="#02152A"/>
+    <circle cx="${18*s}" cy="${47*s}" r="${4.5*s}" fill="#455A64"/>
+    <circle cx="${58*s}" cy="${47*s}" r="${8*s}" fill="#02152A"/>
+    <circle cx="${58*s}" cy="${47*s}" r="${4.5*s}" fill="#455A64"/>
+    <circle cx="${76*s}" cy="${47*s}" r="${8*s}" fill="#02152A"/>
+    <circle cx="${76*s}" cy="${47*s}" r="${4.5*s}" fill="#455A64"/>
+    <rect x="0" y="${22*s}" width="${5*s}" height="${8*s}" rx="${1.5*s}" fill="#FFCE66"/>
   </g>`;
 }
-
-function drawTruckFront(x, y, w, h) {
-  const s = w/80;
-  return `<g transform="translate(${x},${y})">
-    <rect x="${10*s}" y="${8*s}" width="${60*s}" height="${42*s}" rx="${4*s}" fill="#0432BA"/>
-    <rect x="${14*s}" y="${12*s}" width="${24*s}" height="${20*s}" rx="${2*s}" fill="#4878FF"/>
-    <rect x="${14*s}" y="${12*s}" width="${24*s}" height="${10*s}" rx="${2*s}" fill="#92BEFF" opacity="0.7"/>
-    <rect x="${42*s}" y="${16*s}" width="${24*s}" height="${24*s}" rx="${2*s}" fill="#021E70"/>
-    <circle cx="${20*s}" cy="${54*s}" r="${6*s}" fill="#02152A"/>
-    <circle cx="${20*s}" cy="${54*s}" r="${3.5*s}" fill="#455A64"/>
-    <circle cx="${60*s}" cy="${54*s}" r="${6*s}" fill="#02152A"/>
-    <circle cx="${60*s}" cy="${54*s}" r="${3.5*s}" fill="#455A64"/>
-    <rect x="${4*s}" y="${24*s}" width="${8*s}" height="${6*s}" rx="${2*s}" fill="#FFAE00"/>
-    <rect x="${68*s}" y="${24*s}" width="${8*s}" height="${6*s}" rx="${2*s}" fill="#FFAE00"/>
+function drawTruckFront(x, y, sz) {
+  const s = sz/80;
+  return `<g transform="translate(${Math.round(x)},${Math.round(y)})">
+    <rect x="${8*s}" y="${14*s}" width="${64*s}" height="${36*s}" rx="${5*s}" fill="#0432BA"/>
+    <rect x="${12*s}" y="${18*s}" width="${26*s}" height="${20*s}" rx="${3*s}" fill="#4878FF"/>
+    <rect x="${12*s}" y="${18*s}" width="${26*s}" height="${10*s}" rx="${3*s}" fill="#92BEFF" opacity="0.8"/>
+    <rect x="${42*s}" y="${20*s}" width="${26*s}" height="${22*s}" rx="${3*s}" fill="#021E70"/>
+    <rect x="${4*s}" y="${26*s}" width="${7*s}" height="${6*s}" rx="${2*s}" fill="#FFCE66"/>
+    <rect x="${69*s}" y="${26*s}" width="${7*s}" height="${6*s}" rx="${2*s}" fill="#FFCE66"/>
+    <circle cx="${20*s}" cy="${54*s}" r="${7*s}" fill="#02152A"/>
+    <circle cx="${20*s}" cy="${54*s}" r="${4*s}" fill="#455A64"/>
+    <circle cx="${60*s}" cy="${54*s}" r="${7*s}" fill="#02152A"/>
+    <circle cx="${60*s}" cy="${54*s}" r="${4*s}" fill="#455A64"/>
+    <rect x="${8*s}" y="${48*s}" width="${64*s}" height="${5*s}" rx="${2*s}" fill="#021E70"/>
   </g>`;
 }
-
-function drawFuelPump(x, y, w, h) {
-  const s = w/40;
-  return `<g transform="translate(${x},${y})">
-    <rect x="${4*s}" y="${2*s}" width="${30*s}" height="${52*s}" rx="${4*s}" fill="#00BA7F"/>
-    <rect x="${8*s}" y="${6*s}" width="${22*s}" height="${16*s}" rx="${2*s}" fill="white" opacity="0.9"/>
-    <text x="${19*s}" y="${17*s}" text-anchor="middle" font-family="sans-serif" font-size="${8*s}" fill="#00885D" font-weight="bold">$3.95</text>
-    <rect x="${10*s}" y="${26*s}" width="${18*s}" height="${20*s}" rx="${2*s}" fill="#00885D"/>
-    <path d="M${34*s} ${10*s} Q${44*s} ${10*s} ${44*s} ${20*s} L${44*s} ${36*s}" stroke="#021E70" stroke-width="${3*s}" stroke-linecap="round" fill="none"/>
-    <circle cx="${44*s}" cy="${38*s}" r="${4*s}" fill="#021E70"/>
-    <rect x="0" y="${54*s}" width="${38*s}" height="${5*s}" rx="${2*s}" fill="#021E70"/>
+function drawFuelPump(x, y, sz) {
+  const s = sz/65;
+  return `<g transform="translate(${Math.round(x)},${Math.round(y)})">
+    <rect x="${8*s}" y="${6*s}" width="${38*s}" height="${66*s}" rx="${5*s}" fill="#00BA7F"/>
+    <rect x="${13*s}" y="${12*s}" width="${28*s}" height="${22*s}" rx="${3*s}" fill="white" opacity="0.95"/>
+    <text x="${27*s}" y="${24*s}" text-anchor="middle" font-family="monospace" font-size="${9*s}" fill="#00885D" font-weight="bold">3.95</text>
+    <text x="${27*s}" y="${30*s}" text-anchor="middle" font-family="sans-serif" font-size="${6*s}" fill="#00885D">PRICE</text>
+    <rect x="${13*s}" y="${38*s}" width="${28*s}" height="${26*s}" rx="${2*s}" fill="#00885D"/>
+    <path d="M${46*s} ${18*s} Q${58*s} ${18*s} ${58*s} ${30*s} L${58*s} ${52*s} L${54*s} ${52*s}" stroke="#021E70" stroke-width="${4*s}" stroke-linecap="round" fill="none"/>
+    <rect x="${46*s}" y="${50*s}" width="${12*s}" height="${6*s}" rx="${3*s}" fill="#021E70"/>
+    <rect x="${4*s}" y="${72*s}" width="${46*s}" height="${8*s}" rx="${3*s}" fill="#00885D"/>
+    <path d="M${27*s} ${40*s} L${30*s} ${44*s} L${27*s} ${48*s} L${24*s} ${44*s} Z" fill="#00BA7F" stroke="white" stroke-width="${1.5*s}"/>
+    <path d="M${27*s} ${41.5*s} L${25.5*s} ${44*s} L${27*s} ${46.5*s} L${28.5*s} ${44*s} Z" fill="white" opacity="0.7"/>
   </g>`;
 }
-
+function drawFuelNozzle(x, y, sz) {
+  const s = sz/80;
+  return `<g transform="translate(${Math.round(x)},${Math.round(y)})">
+    <path d="M${15*s} ${65*s} Q${20*s} ${50*s} ${30*s} ${42*s} L${50*s} ${22*s} Q${55*s} ${17*s} ${60*s} ${22*s} L${65*s} ${27*s} Q${70*s} ${32*s} ${65*s} ${37*s} L${45*s} ${57*s} Q${38*s} ${64*s} ${30*s} ${62*s} Z" fill="#00BA7F"/>
+    <path d="M${48*s} ${20*s} L${55*s} ${13*s} Q${60*s} ${8*s} ${65*s} ${13*s} L${70*s} ${18*s} Q${75*s} ${23*s} ${70*s} ${28*s} L${63*s} ${35*s}" stroke="#00885D" stroke-width="${5*s}" stroke-linecap="round" fill="none"/>
+    <rect x="${10*s}" y="${60*s}" width="${20*s}" height="${10*s}" rx="${3*s}" fill="#021E70"/>
+    <rect x="${48*s}" y="${22*s}" width="${18*s}" height="${11*s}" rx="${2*s}" fill="#5CD3AD" transform="rotate(-30 ${48*s} ${22*s})"/>
+    <text x="${52*s}" y="${30*s}" font-family="sans-serif" font-size="${7*s}" fill="#00885D" font-weight="bold" transform="rotate(-30 ${52*s} ${30*s})">$</text>
+    <rect x="${62*s}" y="${14*s}" width="${15*s}" height="${10*s}" rx="${2*s}" fill="#5CD3AD" transform="rotate(-15 ${62*s} ${14*s})"/>
+    <text x="${66*s}" y="${22*s}" font-family="sans-serif" font-size="${7*s}" fill="#00885D" font-weight="bold" transform="rotate(-15 ${66*s} ${22*s})">$</text>
+    <rect x="${70*s}" y="${30*s}" width="${12*s}" height="${9*s}" rx="${2*s}" fill="#B9ECDC" transform="rotate(10 ${70*s} ${30*s})"/>
+  </g>`;
+}
 function drawFuelCard(x, y, w, h) {
-  const s = w/90;
-  return `<g transform="translate(${x},${y})">
-    <rect x="${2*s}" y="${2*s}" width="${86*s}" height="${52*s}" rx="${6*s}" fill="#0432BA"/>
-    <path d="M${2*s} ${2*s} Q${45*s} ${24*s} ${88*s} ${2*s}" fill="#4878FF" opacity="0.25"/>
-    <path d="M${2*s} ${32*s} Q${45*s} ${52*s} ${88*s} ${32*s}" fill="#00BA7F" opacity="0.18"/>
-    <rect x="${8*s}" y="${10*s}" width="${20*s}" height="${14*s}" rx="${2*s}" fill="#FFAE00" opacity="0.9"/>
-    <text x="${45*s}" y="${25*s}" text-anchor="middle" font-family="sans-serif" font-size="${7*s}" fill="white" font-weight="bold">MUDFLAP</text>
-    <text x="${45*s}" y="${38*s}" text-anchor="middle" font-family="sans-serif" font-size="${6*s}" fill="rgba(255,255,255,0.65)">•••• •••• •••• 4567</text>
-    <text x="${74*s}" y="${50*s}" text-anchor="middle" font-family="sans-serif" font-size="${7*s}" fill="white" font-weight="600">VISA</text>
+  const s = w/95;
+  return `<g transform="translate(${Math.round(x)},${Math.round(y)})">
+    <rect x="${2*s}" y="${2*s}" width="${91*s}" height="${58*s}" rx="${7*s}" fill="#0432BA"/>
+    <path d="M${2*s} ${30*s} Q${30*s} ${15*s} ${60*s} ${28*s} Q${80*s} ${38*s} ${93*s} ${25*s} L${93*s} ${60*s} L${2*s} ${60*s} Z" fill="#021E70" opacity="0.5"/>
+    <path d="M${2*s} ${40*s} Q${25*s} ${28*s} ${55*s} ${38*s} Q${75*s} ${48*s} ${93*s} ${36*s} L${93*s} ${60*s} L${2*s} ${60*s} Z" fill="#00BA7F" opacity="0.2"/>
+    <rect x="${8*s}" y="${12*s}" width="${18*s}" height="${14*s}" rx="${2*s}" fill="#FFAE00"/>
+    <line x1="${8*s}" y1="${19*s}" x2="${26*s}" y2="${19*s}" stroke="#CC8B00" stroke-width="${1*s}"/>
+    <line x1="${17*s}" y1="${12*s}" x2="${17*s}" y2="${26*s}" stroke="#CC8B00" stroke-width="${1*s}"/>
+    <path d="M${36*s} ${10*s} L${40*s} ${14*s} L${36*s} ${18*s} L${32*s} ${14*s} Z" fill="#00BA7F" stroke="white" stroke-width="${1.5*s}"/>
+    <path d="M${36*s} ${11.5*s} L${34.5*s} ${14*s} L${36*s} ${16.5*s} L${37.5*s} ${14*s} Z" fill="white"/>
+    <text x="${44*s}" y="${17*s}" font-family="sans-serif" font-size="${7*s}" fill="white" font-weight="800" letter-spacing="${0.5*s}">MUDFLAP</text>
+    <text x="${8*s}" y="${36*s}" font-family="monospace" font-size="${6.5*s}" fill="rgba(255,255,255,0.65)" letter-spacing="${2*s}">•••• •••• •••• 4567</text>
+    <text x="${82*s}" y="${14*s}" font-family="sans-serif" font-size="${8*s}" fill="white" opacity="0.6">)))</text>
+    <text x="${72*s}" y="${54*s}" font-family="sans-serif" font-size="${10*s}" fill="white" font-weight="700" font-style="italic">VISA</text>
+  </g>`;
+}
+function drawUSMap(x, y, sz) {
+  const s = sz/90;
+  const pins = [[25,28],[40,22],[55,25],[65,32],[35,38],[50,42],[20,40],[72,28]];
+  return `<g transform="translate(${Math.round(x)},${Math.round(y)})">
+    <path d="M${10*s} ${20*s} Q${15*s} ${15*s} ${25*s} ${18*s} Q${35*s} ${12*s} ${50*s} ${15*s} Q${65*s} ${12*s} ${75*s} ${18*s} Q${82*s} ${22*s} ${80*s} ${35*s} Q${78*s} ${48*s} ${70*s} ${52*s} Q${60*s} ${58*s} ${50*s} ${55*s} Q${35*s} ${58*s} ${25*s} ${52*s} Q${15*s} ${48*s} ${12*s} ${38*s} Q${8*s} ${30*s} ${10*s} ${20*s} Z" fill="#D9E8FF" opacity="0.75"/>
+    ${pins.map(([cx,cy],i)=>`<circle cx="${cx*s}" cy="${cy*s}" r="${4*s}" fill="${i%2===0?'#0432BA':'#00BA7F'}"/>
+    <line x1="${cx*s}" y1="${(cy+4)*s}" x2="${cx*s}" y2="${(cy+9)*s}" stroke="${i%2===0?'#0432BA':'#00BA7F'}" stroke-width="${2*s}"/>
+    <path d="M${cx*s} ${(cy-4)*s} L${(cx+3)*s} ${cy*s} L${cx*s} ${(cy+4)*s} L${(cx-3)*s} ${cy*s} Z" fill="white" opacity="0.85"/>`).join('')}
+  </g>`;
+}
+function drawMoneyStack(x, y, sz) {
+  const s = sz/80;
+  return `<g transform="translate(${Math.round(x)},${Math.round(y)})">
+    <rect x="${5*s}" y="${22*s}" width="${55*s}" height="${28*s}" rx="${4*s}" fill="#5CD3AD"/>
+    <rect x="${5*s}" y="${22*s}" width="${55*s}" height="${28*s}" rx="${4*s}" fill="none" stroke="#00885D" stroke-width="${1.5*s}"/>
+    <rect x="${5*s}" y="${14*s}" width="${55*s}" height="${12*s}" rx="${4*s}" fill="#00BA7F"/>
+    <rect x="${5*s}" y="${6*s}" width="${55*s}" height="${12*s}" rx="${4*s}" fill="#00885D"/>
+    <text x="${32*s}" y="${40*s}" text-anchor="middle" font-family="sans-serif" font-size="${18*s}" fill="white" font-weight="800">$</text>
+    <circle cx="${65*s}" cy="${20*s}" r="${12*s}" fill="#FFAE00"/>
+    <circle cx="${65*s}" cy="${20*s}" r="${8*s}" fill="#FFCE66"/>
+    <text x="${65*s}" y="${24*s}" text-anchor="middle" font-family="sans-serif" font-size="${10*s}" fill="#CC8B00" font-weight="800">$</text>
+    <circle cx="${70*s}" cy="${36*s}" r="${8*s}" fill="#FFAE00"/>
+    <circle cx="${70*s}" cy="${36*s}" r="${5.5*s}" fill="#FFCE66"/>
+    <circle cx="${58*s}" cy="${40*s}" r="${7*s}" fill="#FFAE00"/>
+    <circle cx="${58*s}" cy="${40*s}" r="${4.5*s}" fill="#FFCE66"/>
+  </g>`;
+}
+function drawTruckStopSign(x, y, sz) {
+  const s = sz/80;
+  return `<g transform="translate(${Math.round(x)},${Math.round(y)})">
+    <circle cx="${40*s}" cy="${8*s}" r="${8*s}" fill="#00BA7F"/>
+    <path d="M${40*s} ${4.5*s} L${43*s} ${8*s} L${40*s} ${11.5*s} L${37*s} ${8*s} Z" fill="none" stroke="white" stroke-width="${1.5*s}"/>
+    <path d="M${40*s} ${5.8*s} L${38.8*s} ${8*s} L${40*s} ${10.2*s} L${41.2*s} ${8*s} Z" fill="white"/>
+    <rect x="${5*s}" y="${16*s}" width="${70*s}" height="${26*s}" rx="${4*s}" fill="#0432BA"/>
+    <text x="${40*s}" y="${28*s}" text-anchor="middle" font-family="sans-serif" font-size="${8*s}" fill="white" font-weight="800" letter-spacing="${1*s}">TRUCK STOP</text>
+    <rect x="${5*s}" y="${44*s}" width="${70*s}" height="${24*s}" rx="${4*s}" fill="#02152A"/>
+    <text x="${25*s}" y="${60*s}" text-anchor="middle" font-family="monospace" font-size="${12*s}" fill="#00BA7F" font-weight="bold">3.55</text>
+    <text x="${58*s}" y="${60*s}" text-anchor="middle" font-family="monospace" font-size="${12*s}" fill="#00BA7F" font-weight="bold">4.15</text>
+    <text x="${25*s}" y="${66*s}" text-anchor="middle" font-family="sans-serif" font-size="${5*s}" fill="#546E7A">REGULAR</text>
+    <text x="${58*s}" y="${66*s}" text-anchor="middle" font-family="sans-serif" font-size="${5*s}" fill="#00BA7F">DIESEL</text>
+    <rect x="${37*s}" y="${68*s}" width="${6*s}" height="${14*s}" fill="#455A64"/>
   </g>`;
 }
 
-function drawPiggy(x, y, w, h) {
-  const s = w/70;
-  return `<g transform="translate(${x},${y})">
-    <ellipse cx="${35*s}" cy="${42*s}" rx="${25*s}" ry="${20*s}" fill="#5CD3AD"/>
-    <circle cx="${48*s}" cy="${30*s}" r="${9*s}" fill="#5CD3AD"/>
-    <circle cx="${51*s}" cy="${27*s}" r="${3*s}" fill="white"/>
-    <ellipse cx="${50*s}" cy="${38*s}" rx="${4*s}" ry="${3*s}" fill="#00885D"/>
-    <path d="M${20*s} ${38*s} Q${14*s} ${46*s} ${17*s} ${52*s} L${12*s} ${58*s} L${20*s} ${55*s}" stroke="#00885D" stroke-width="${2*s}" fill="none" stroke-linecap="round"/>
-    <path d="M${28*s} ${57*s} L${34*s} ${62*s} L${40*s} ${57*s}" stroke="#00885D" stroke-width="${2*s}" fill="none" stroke-linecap="round"/>
-    <rect x="${30*s}" y="${16*s}" width="${10*s}" height="${16*s}" rx="${2*s}" fill="#FFAE00"/>
-    <path d="M${35*s} ${12*s} L${35*s} ${16*s} M${32*s} ${13.5*s} L${35*s} ${16*s} L${38*s} ${13.5*s}" stroke="#FFAE00" stroke-width="${2*s}" stroke-linecap="round"/>
-  </g>`;
-}
-
-function drawNetwork(x, y, w, h) {
-  const s = w/70;
-  const pts = [{cx:14,cy:18},{cx:34,cy:10},{cx:56,cy:16},{cx:22,cy:36},{cx:46,cy:30},{cx:60,cy:44},{cx:9,cy:48}];
-  const lines = [[0,1],[1,2],[3,4],[4,5],[0,3],[2,5]];
-  return `<g transform="translate(${x},${y})">
-    ${lines.map(([a,b]) => `<line x1="${pts[a].cx*s}" y1="${pts[a].cy*s}" x2="${pts[b].cx*s}" y2="${pts[b].cy*s}" stroke="#4878FF" stroke-width="${1.5*s}" opacity="0.4"/>`).join('')}
-    ${pts.map((p,i) => `<circle cx="${p.cx*s}" cy="${p.cy*s}" r="${4*s}" fill="${i < 3 ? '#0432BA' : '#00BA7F'}" opacity="0.9"/>`).join('')}
-  </g>`;
-}
-
-function drawStatBadge(x, y, w, h, val, label, bg, textCol) {
-  return `<g transform="translate(${x},${y})">
-    <rect width="${w}" height="${h}" rx="${Math.round(w*0.1)}" fill="${bg}"/>
-    <text x="${w/2}" y="${h*0.45}" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="${Math.round(w*0.22)}" font-weight="900" fill="${textCol}">${val}</text>
-    <text x="${w/2}" y="${h*0.75}" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="${Math.round(w*0.11)}" fill="${textCol}" opacity="0.8">${label}</text>
-  </g>`;
-}
-
-// ─── Generate ───
 async function generate() {
   const message = document.getElementById('message').value.trim();
   if (!message) { document.getElementById('message').focus(); return; }
-
   const bgPrompt = document.getElementById('bg-prompt').value.trim();
   const btn = document.getElementById('gen-btn');
   btn.disabled = true;
   btn.innerHTML = '<div style="width:16px;height:16px;border:3px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite"></div> Generating…';
-
   document.getElementById('preview-area').innerHTML = '<div class="empty-state"><div class="loading-ring"></div><p>Building your ad…</p></div>';
-  document.getElementById('preview-info').textContent = 'Generating copy…';
+  document.getElementById('preview-info').textContent = 'Generating…';
 
   try {
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message,
-        cta: selectedCTA,
-        stage: selectedFunnel,
-        layout: selectedLayout,
-        stat: selectedStat,
-        assets: [...selectedAssets],
-        bgPrompt,
-        prompt: message, // legacy compat
-      })
+      body: JSON.stringify({ message, cta: selectedCTA, stage: selectedFunnel, layout: selectedLayout, stat: selectedStat, assets: [...selectedAssets], bgPrompt, prompt: message })
     });
-
     if (!res.ok) throw new Error(`API error ${res.status}`);
     const spec = await res.json();
     if (spec.error) throw new Error(JSON.stringify(spec.error));
-
     const fmt = FORMATS[currentFormat];
     currentSVG = buildSVG(spec, fmt);
     renderSVG(currentSVG);
     document.getElementById('dl-btn').disabled = false;
     document.getElementById('preview-info').textContent = `${fmt.label} · Ready to download`;
-
   } catch (err) {
-    document.getElementById('preview-area').innerHTML = `<div class="empty-state"><p style="color:#e53e3e">Generation failed: ${err.message}<br><br>Try again or simplify your description.</p></div>`;
+    document.getElementById('preview-area').innerHTML = `<div class="empty-state"><p style="color:#e53e3e">Generation failed: ${err.message}<br><br>Try again.</p></div>`;
     document.getElementById('preview-info').textContent = 'Error — try again';
   }
-
   btn.disabled = false;
   btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Generate visual →';
 }
 
 function renderSVG(svg) {
   const fmt = FORMATS[currentFormat];
-  const scale = Math.min(fmt.vw / fmt.w, fmt.vh / fmt.h);
-  const dw = Math.round(fmt.w * scale);
-  const dh = Math.round(fmt.h * scale);
+  const scale = Math.min(fmt.vw/fmt.w, fmt.vh/fmt.h);
+  const dw = Math.round(fmt.w*scale), dh = Math.round(fmt.h*scale);
   let disp = svg.replace(/width="\d+"/, `width="${dw}"`).replace(/height="\d+"/, `height="${dh}"`);
   document.getElementById('preview-area').innerHTML = `<div class="ad-wrapper" style="width:${dw}px;height:${dh}px;">${disp}</div>`;
 }
@@ -761,11 +707,9 @@ async function downloadPNG() {
   const fmt = FORMATS[currentFormat];
   const btn = document.getElementById('dl-btn');
   btn.textContent = 'Preparing…'; btn.disabled = true;
-
   const fullSVG = currentSVG.replace(/width="\d+"/, `width="${fmt.w}"`).replace(/height="\d+"/, `height="${fmt.h}"`);
   const blob = new Blob([fullSVG], { type: 'image/svg+xml' });
   const url = URL.createObjectURL(blob);
-
   const img = new Image();
   img.onload = () => {
     const canvas = document.createElement('canvas');
@@ -781,9 +725,7 @@ async function downloadPNG() {
     }, 'image/png');
   };
   img.onerror = () => {
-    // fallback: SVG download
-    const a = document.createElement('a');
-    a.href = url; a.download = `mudflap-ad-${currentFormat}.svg`; a.click();
+    const a = document.createElement('a'); a.href = url; a.download = `mudflap-ad-${currentFormat}.svg`; a.click();
     btn.textContent = 'Download PNG'; btn.disabled = false;
   };
   img.src = url;
